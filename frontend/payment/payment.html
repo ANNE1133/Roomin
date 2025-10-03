@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Page</title>
+    <link rel="stylesheet" href="css/payment.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="css/popup.css">
+ 
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Logo -->
+            <div class="logo-section">
+                <a href="#"><img src="img/logo.png" alt=""></a>
+                <div class="logo-text">ROOMIN</div>
+            </div>
+            <!-- Navigation -->
+            <nav class="navigation">
+                <button class="nav-item active" data-page="home">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    <span>หน้าหลัก</span>
+                </button>
+                
+                <button class="nav-item" data-page="rooms">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>ข้อมูลห้อง</span>
+                </button>
+                
+                <button class="nav-item" data-page="invoices">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>ใบแจ้งค่าห้อง</span>
+                </button>
+                
+                <button class="nav-item" data-page="notifications">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M15 17h5l-5 5v-5zM4 4h16v12H4V4z"/>
+                    </svg>
+                    <span>แจ้งซ่อม</span>
+                </button>
+                
+                <button class="nav-item" data-page="contact">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    <span>ติดต่อเจ้าของ</span>
+                </button>
+                
+                <button class="nav-item" data-page="support">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>บัญชีผู้ใช้</span>
+                </button>
+                
+                <button class="nav-item" data-page="settings">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                    <span>ตั้งค่า</span>
+                </button>
+            </nav>
+
+            <!-- Logout -->
+            <div class="logout-section">
+                <button class="nav-item logout" id="logoutBtn">
+                    <svg class="nav-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                    </svg>
+                    <span>ออกจากระบบ</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="menu-toggle" id="menuToggle">☰</button>
+                <h1 class="page-title">หน้าแรก</h1>
+                <div class="header-actions">
+                    <button class="header-btn" id="notificationBtn">
+                        <svg class="header-icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M15 17h5l-5 5v-5zM4 4h16v12H4V4z"/>
+                        </svg>
+                    </button>
+                    <button class="header-btn" id="userBtn">
+                        <svg class="header-icon" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                        </svg>
+                    </button>
+                    <span class="user-name">คุณ อเนชา</span>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+                <div class="payment-table">
+                    <!-- Table Header -->
+                    <div class="table-header">
+                        <div class="table-row">
+                            <div class="table-cell">ห้อง</div>
+                            <div class="table-cell">วันที่แจ้ง</div>
+                            <div class="table-cell">กำหนดชำระ</div>
+                            <div class="table-cell">วันที่ชำระ</div>
+                            <div class="table-cell">จำนวนเงิน</div>
+                            <div class="table-cell"></div>
+                            <div class="table-cell">สถานะ</div>
+                        </div>
+                    </div>
+
+                    <!-- Table Body -->
+                    <div class="table-body" id="tableBody">
+                        <!-- Data will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Payment Confirmation Popup -->
+    <div class="popup-overlay" id="paymentPopup">
+        <div class="popup-container">
+            <!-- Normal Payment State -->
+            <div id="paymentContent">
+                <div class="popup-header">
+                    <h2 class="popup-title">ยืนยันการชำระเงิน</h2>
+                    <button class="close-btn" onclick="closePaymentPopup()">✕</button>
+                </div>
+                
+                <div class="amount-display">
+                    <div class="amount" id="displayAmount">5,500<span class="currency">บาท</span></div>
+                </div>
+
+                <div class="qr-section">
+                    <div class="qr-title">ช่องทางการชำระเงิน</div>
+                    <div class="qr-container">
+                        <div class="qr-placeholder">
+                            QR Code<br>สำหรับสแกน
+                        </div>
+                    </div>
+                    <div class="payment-details">
+                        <div class="detail-row">
+                            <span class="detail-label">ชื่อ :</span>
+                            <span class="detail-value" id="paymentName">คุณอเนชา (ห้อง 1104)</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">เลขบัญชี :</span>
+                            <span class="detail-value">123-4-56789-0</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">ธนาคาร :</span>
+                            <span class="detail-value">ธนาคารไทยพาณิชย์</span>
+                        </div>
+                    </div>
+                    <div class="scan-instruction">Scan QR to pay</div>
+                </div>
+
+                <div class="divider"></div>
+
+                <div class="upload-section">
+                    <h3 class="upload-title">แนบหลักฐานการชำระเงิน</h3>
+                    
+                    <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">📄</div>
+                        <div class="upload-text">อัปโหลดสลิป</div>
+                        <div class="upload-subtext">โปรดแนบสลิปการโอนเงินเป็นไฟล์ .jpg หรือ .png</div>
+                    </div>
+
+                    <input type="file" id="fileInput" class="file-input" accept=".jpg,.jpeg,.png,.pdf">
+
+                    <div class="file-preview" id="filePreview">
+                        <div class="file-icon">📄</div>
+                        <div class="file-info">
+                            <div class="file-name" id="fileName"></div>
+                            <div class="file-size" id="fileSize"></div>
+                        </div>
+                        <button class="remove-file" onclick="removeFile()">✕</button>
+                    </div>
+                </div>
+
+                <div class="popup-actions">
+                    <button class="btn btn-cancel" onclick="closePaymentPopup()">ยกเลิก</button>
+                    <button class="btn btn-submit" id="submitBtn" onclick="submitPayment()" disabled>ส่งหลักฐาน</button>
+                </div>
+            </div>
+
+            <!-- Success State -->
+            <div class="success-message" id="successMessage">
+                <div class="success-icon">✓</div>
+                <div class="success-title">ส่งหลักฐานสำเร็จ!</div>
+                <div class="success-text">หากมีข้อสงสัยใดๆ<br>กรุณาติดต่อเจ้าหนา้ที่</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="payment.js"></script>
+</body>
+</html>

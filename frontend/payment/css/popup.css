@@ -1,0 +1,421 @@
+/* ================================
+   PAYMENT POPUP STYLES
+   ================================ */
+
+/* Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.popup-overlay.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+/* Popup Container */
+.popup-container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 450px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: scale(0.7) translateY(50px);
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+
+.popup-overlay.active .popup-container {
+    transform: scale(1) translateY(0);
+}
+
+/* Popup Header */
+.popup-header {
+    padding: 24px 24px 0 24px;
+    position: relative;
+}
+
+.popup-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a202c;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    color: #64748b;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-size: 20px;
+}
+
+.close-btn:hover {
+    background: #f1f5f9;
+    color: #1a202c;
+}
+
+/* Amount Display */
+.amount-display {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.amount {
+    font-size: 48px;
+    font-weight: 700;
+    color: #8B7FB8;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.currency {
+    font-size: 24px;
+    color: #1a202c;
+    margin-left: 8px;
+}
+
+/* QR Section */
+.qr-section {
+    text-align: center;
+    margin: 24px 0;
+}
+
+.qr-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 16px;
+}
+
+.qr-container {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 0 24px 16px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.qr-placeholder {
+    width: 160px;
+    height: 160px;
+    background: white;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    font-size: 14px;
+    text-align: center;
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="10" height="10" fill="%23000"/><rect x="20" y="0" width="10" height="10" fill="%23000"/><rect x="40" y="0" width="10" height="10" fill="%23000"/><rect x="70" y="0" width="10" height="10" fill="%23000"/><rect x="90" y="0" width="10" height="10" fill="%23000"/><rect x="0" y="10" width="10" height="10" fill="%23000"/><rect x="60" y="10" width="10" height="10" fill="%23000"/><rect x="90" y="10" width="10" height="10" fill="%23000"/></svg>');
+    background-size: 80%;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.payment-details {
+    padding: 0 24px;
+    margin-bottom: 16px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.detail-label {
+    color: #64748b;
+}
+
+.detail-value {
+    color: #1a202c;
+    font-weight: 500;
+}
+
+.scan-instruction {
+    text-align: center;
+    color: #64748b;
+    font-size: 14px;
+    margin: 0 24px 24px 24px;
+}
+
+.divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 24px 0;
+}
+
+/* Upload Section */
+.upload-section {
+    padding: 0 24px 24px 24px;
+}
+
+.upload-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1a202c;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.upload-area {
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    background: #fafbfc;
+    margin-bottom: 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: #8B7FB8;
+    background: #f8f7ff;
+}
+
+.upload-area.dragover {
+    border-color: #8B7FB8;
+    background: #f0edff;
+}
+
+.upload-icon {
+    width: 48px;
+    height: 48px;
+    background: #8B7FB8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+    color: white;
+    font-size: 20px;
+}
+
+.upload-text {
+    color: #1a202c;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+.upload-subtext {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.file-input {
+    display: none;
+}
+
+/* File Preview */
+.file-preview {
+    display: none;
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.file-preview.show {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.file-icon {
+    width: 32px;
+    height: 32px;
+    background: #0ea5e9;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 14px;
+}
+
+.file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a202c;
+}
+
+.file-size {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.remove-file {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.remove-file:hover {
+    background: #fef2f2;
+}
+
+/* Action Buttons */
+.popup-actions {
+    display: flex;
+    gap: 12px;
+    padding: 0 24px 24px 24px;
+}
+
+.btn {
+    flex: 1;
+    padding: 14px 24px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-size: 14px;
+}
+
+.btn-cancel {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.btn-cancel:hover {
+    background: #e2e8f0;
+}
+
+.btn-submit {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white;
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(249, 115, 22, 0.4);
+}
+
+.btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Success State */
+.success-message {
+    display: none;
+    text-align: center;
+    padding: 40px 24px;
+}
+
+.success-message.show {
+    display: block;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background: #10b981;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 40px;
+    animation: successPop 0.6s ease-out;
+}
+
+@keyframes successPop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.success-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #10b981;
+    margin-bottom: 8px;
+}
+
+.success-text {
+    color: #64748b;
+    font-size: 14px;
+}
+
+/* ================================
+   RESPONSIVE FOR POPUP
+   ================================ */
+
+@media (max-width: 768px) {
+    .popup-container {
+        margin: 20px;
+        max-height: calc(100vh - 40px);
+        max-width: none;
+    }
+    
+    .amount {
+        font-size: 36px;
+    }
+    
+    .currency {
+        font-size: 20px;
+    }
+    
+    .qr-container {
+        margin: 0 16px 16px 16px;
+        padding: 16px;
+        min-height: 180px;
+    }
+    
+    .qr-placeholder {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .upload-section {
+        padding: 0 16px 24px 16px;
+    }
+    
+    .popup-actions {
+        padding: 0 16px 24px 16px;
+    }
+}
