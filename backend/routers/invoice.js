@@ -3,8 +3,8 @@
 // 4. invoice.routes.js - จัดการใบแจ้งหนี้
 // ============================================
 
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+const router = Router();
 
 // ดูใบแจ้งหนี้ทั้งหมด
 router.get('/', async (c) => {
@@ -36,4 +36,4 @@ router.get('/:id/pdf', async (c) => {
   return c.json({ message: 'Download PDF' })
 })
 
-module.exports = router
+export default router

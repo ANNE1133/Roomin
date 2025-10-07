@@ -2,8 +2,8 @@
 // 5. payment.routes.js - จัดการการชำระเงิน
 // ============================================
 
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+const router = Router();
 
 // ดูการชำระเงินทั้งหมด
 router.get('/', async (c) => {
@@ -35,4 +35,4 @@ router.patch('/:id/reject', async (c) => {
   return c.json({ message: 'Reject payment' })
 })
 
-module.exports = router
+export default router

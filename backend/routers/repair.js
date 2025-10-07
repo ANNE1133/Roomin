@@ -2,8 +2,8 @@
 // 6. repair.routes.js - จัดการแจ้งซ่อม
 // ============================================
 
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+const router = Router();
 
 // ดูรายการแจ้งซ่อมทั้งหมด
 router.get('/', async (c) => {
@@ -30,4 +30,4 @@ router.delete('/:id', async (c) => {
   return c.json({ message: 'Delete repair' })
 })
 
-module.exports = router
+export default router
