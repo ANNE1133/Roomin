@@ -1,0 +1,481 @@
+/* ================================
+   RESPONSIVE DESIGN BREAKPOINTS
+   ================================ */
+
+/* Base styles (Mobile First) - 320px ขึ้นไป */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 14px; /* เล็กกว่าสำหรับมือถือ */
+    line-height: 1.4;
+    color: #333;
+    background-color: #f3f4f6;
+}
+
+/* ================================
+   CONTAINER LAYOUTS
+   ================================ */
+
+.container {
+    display: flex;
+    flex-direction: column; /* Mobile: แนวตั้ง */
+    min-height: 100vh;
+    background-color: #f3f4f6;
+}
+
+/* Sidebar for Mobile */
+.sidebar {
+    width: 100%;
+    background-color: #8B7FB8;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    order: 2; /* แสดงหลัง main content */
+}
+
+.logo-section {
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.logo-text {
+    font-size: 18px;
+}
+
+.navigation {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    padding: 8px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.nav-item {
+    white-space: nowrap;
+    padding: 8px 12px;
+    font-size: 12px;
+    margin-bottom: 0;
+    border-radius: 6px;
+    flex-shrink: 0;
+}
+
+.logout-section {
+    display: none; /* ซ่อนในมือถือ */
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    order: 1; /* แสดงก่อน sidebar */
+}
+
+.header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+}
+
+.page-title {
+    font-size: 18px;
+}
+
+.header-actions {
+    gap: 12px;
+}
+
+.user-name {
+    font-size: 12px;
+}
+
+.content-area {
+    padding: 16px;
+}
+
+/* ================================
+   TABLE RESPONSIVE
+   ================================ */
+
+.payment-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.table-header {
+    display: none; /* ซ่อน header ในมือถือ */
+}
+
+.table-row {
+    display: block; /* เปลี่ยนจาก grid เป็น block */
+    padding: 16px;
+    border-bottom: 1px solid #e5e7eb;
+    background: white;
+    margin-bottom: 8px;
+    border-radius: 8px;
+}
+
+.table-cell {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.table-cell:last-child {
+    border-bottom: none;
+}
+
+.table-cell::before {
+    content: attr(data-label) ": ";
+    font-weight: bold;
+    color: #6b7280;
+    min-width: 100px;
+}
+
+/* Badge adjustments for mobile */
+.badge-container {
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    padding: 4px 8px;
+    font-size: 11px;
+}
+
+.download-btn {
+    width: 28px;
+    height: 28px;
+    padding: 4px;
+}
+
+.download-icon {
+    width: 14px;
+    height: 14px;
+}
+
+/* ================================
+   TABLET (iPad) - 768px ขึ้นไป
+   ================================ */
+
+@media (min-width: 768px) {
+    body {
+        font-size: 15px;
+    }
+    
+    .container {
+        flex-direction: row; /* iPad: แนวนอน */
+    }
+    
+    .sidebar {
+        width: 220px;
+        height: 100vh;
+        order: 1; /* sidebar ด้านซ้าย */
+        flex-direction: column;
+    }
+    
+    .logo-section {
+        padding: 20px;
+        justify-content: flex-start;
+    }
+    
+    .logo-text {
+        font-size: 20px;
+    }
+    
+    .navigation {
+        flex-direction: column;
+        padding: 0 16px;
+        overflow: visible;
+    }
+    
+    .nav-item {
+        width: 100%;
+        padding: 10px 16px;
+        margin-bottom: 6px;
+        font-size: 14px;
+    }
+    
+    .logout-section {
+        display: block;
+        padding: 16px;
+    }
+    
+    .main-content {
+        order: 2; /* main content ด้านขวา */
+    }
+    
+    .header {
+        padding: 16px 24px;
+    }
+    
+    .page-title {
+        font-size: 20px;
+    }
+    
+    .content-area {
+        padding: 20px;
+    }
+    
+    /* Table for iPad */
+    .table-header {
+        display: block; /* แสดง header */
+    }
+    
+    .table-row {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr 1.2fr 1.2fr 1fr 60px 1.5fr;
+        gap: 12px;
+        padding: 12px 16px;
+        margin-bottom: 0;
+        border-radius: 0;
+    }
+    
+    .table-cell {
+        display: flex;
+        align-items: center;
+        padding: 0;
+        border-bottom: none;
+    }
+    
+    .table-cell::before {
+        display: none; /* ซ่อน label */
+    }
+    
+    .badge {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+    
+    .download-btn {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .download-icon {
+        width: 15px;
+        height: 15px;
+    }
+}
+
+/* ================================
+   DESKTOP - 1024px ขึ้นไป
+   ================================ */
+
+@media (min-width: 1024px) {
+    body {
+        font-size: 16px;
+    }
+    
+    .sidebar {
+        width: 240px;
+    }
+    
+    .logo-section {
+        padding: 24px;
+    }
+    
+    .nav-item {
+        padding: 12px 16px;
+        margin-bottom: 8px;
+        font-size: 16px;
+    }
+    
+    .header {
+        padding: 16px 32px;
+    }
+    
+    .content-area {
+        padding: 24px;
+    }
+    
+    /* Table for Desktop */
+    .table-row {
+        grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr 1.2fr 80px 2fr;
+        gap: 16px;
+        padding: 16px 24px;
+    }
+    
+    .table-cell:nth-child(5) {
+        justify-content: flex-end; /* จำนวนเงิน - จัดขวา */
+    }
+    
+    .table-cell:nth-child(6) {
+        justify-content: center; /* ดาวน์โหลด - จัดกลาง */
+    }
+    
+    .table-cell:nth-child(7) {
+        justify-content: flex-start; /* สถานะ - จัดซ้าย */
+    }
+    
+    .badge {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+    
+    .download-btn {
+        width: 32px;
+        height: 32px;
+        padding: 6px;
+    }
+    
+    .download-icon {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+/* ================================
+   LARGE DESKTOP - 1440px ขึ้นไป
+   ================================ */
+
+@media (min-width: 1440px) {
+    .sidebar {
+        width: 280px;
+    }
+    
+    .content-area {
+        padding: 32px;
+    }
+    
+    .table-row {
+        grid-template-columns: 120px 180px 180px 180px 140px 80px 280px;
+        gap: 20px;
+        padding: 20px 32px;
+    }
+    
+    .nav-item {
+        font-size: 17px;
+        padding: 14px 20px;
+    }
+    
+    .page-title {
+        font-size: 24px;
+    }
+}
+
+/* ================================
+   UTILITY CLASSES
+   ================================ */
+
+/* Hide on mobile */
+@media (max-width: 900px) {
+    .sidebar {
+        position: fixed;       /* ให้ sidebar อยู่บน viewport */
+        top: 0;
+        left: -250px;          /* ซ่อนไว้ด้านซ้าย */
+        width: 250px;
+        height: 100vh;
+        z-index: 1000;
+        background-color: #8B7FB8;
+        overflow-y: auto;
+        transition: left 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* เมื่อเปิด sidebar */
+    .sidebar.active {
+        left: 0;
+    }
+
+        /* overlay ด้านหลังเมื่อ sidebar เปิด */
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 900;
+    }
+
+    .overlay.active {
+        display: block;
+    }
+
+    /* แสดงปุ่ม Hamburger */
+    .menu-toggle {
+        display: inline-block;
+        font-size: 24px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-right: 12px;
+    }
+    .navigation {
+        display: flex;
+        flex-direction: column; /* เรียงแนวตั้ง */
+        gap: 8px;
+        padding: 16px;
+        overflow-y: auto;       /* scroll ถ้าเมนูยาว */
+    }
+
+    .nav-item {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+        white-space: normal;    /* ให้ข้อความยาวลงบรรทัดใหม่ได้ */
+    }
+}
+
+/* Hide on tablet */
+@media (min-width: 901px) and (max-width: 1023px) {
+    .hide-tablet {
+        display: none !important;
+    }
+}
+
+/* Hide on desktop */
+@media (min-width: 1024px) {
+    .hide-desktop {
+        display: none !important;
+    }
+}
+
+/* Show only on mobile */
+.show-mobile {
+    display: block;
+}
+
+@media (min-width: 901px) {
+    /* .show-mobile {
+        display: none !important;
+    } */
+    .menu-toggle {
+        display: none;
+    }
+}
+
+/* Show only on tablet */
+.show-tablet {
+    display: none;
+}
+
+@media (min-width: 901px) and (max-width: 1023px) {
+    .show-tablet {
+        display: block !important;
+    }
+}
+
+/* Show only on desktop */
+.show-desktop {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .show-desktop {
+        display: block !important;
+    }
+}

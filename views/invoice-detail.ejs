@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>รายละเอียดเอกสาร - ROOMIN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Sarabun', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* Action Bar */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .action-btn.print {
+            background: #f59e0b;
+            color: white;
+        }
+
+        /* Document Card */
+        .document-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* Document Header */
+        .doc-header {
+            background: linear-gradient(135deg, #8B7FB8 0%, #9C8CC8 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .doc-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat;
+            background-size: cover;
+            opacity: 0.3;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .logo-icon {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .logo-block {
+            background-color: #F5A623;
+            border-radius: 4px;
+        }
+
+        .logo-block.large {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-block.small {
+            width: 40px;
+            height: 20px;
+            opacity: 0.8;
+        }
+
+        .company-name {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .doc-type {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 16px 0 8px 0;
+            position: relative;
+        }
+
+        .doc-number {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-badge.paid {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-badge.unpaid {
+            background: #ef4444;
+            color: white;
+        }
+
+        .status-badge.pending {
+            background: #f59e0b;
+            color: white;
+        }
+
+        /* Document Body */
+        .doc-body {
+            padding: 40px;
+        }
+
+        /* Info Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 40px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .info-section {
+            background: #f8fafc;
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid #8B7FB8;
+        }
+
+        .info-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #8B7FB8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .info-value {
+            color: #1a202c;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Items Table */
+        .items-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #8B7FB8;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        .items-table thead {
+            background: linear-gradient(135deg, #8B7FB8 0%, #9C8CC8 100%);
+            color: white;
+        }
+
+        .items-table th {
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .items-table th:last-child {
+            text-align: right;
+        }
+
+        .items-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 15px;
+        }
+
+        .items-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .items-table td:last-child {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 40px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            font-size: 15px;
+        }
+
+        .summary-row.total {
+            border-top: 3px solid #8B7FB8;
+            margin-top: 16px;
+            padding-top: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #8B7FB8;
+        }
+
+        .summary-label {
+            color: #64748b;
+        }
+
+        .summary-value {
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .summary-row.total .summary-value {
+            color: #8B7FB8;
+        }
+
+        /* Payment Info */
+        .payment-info {
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .payment-info-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #166534;
+            margin-bottom: 16px;
+        }
+
+        .payment-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .payment-info-label {
+            color: #15803d;
+        }
+
+        .payment-info-value {
+            font-weight: 600;
+            color: #166534;
+        }
+
+        /* Notes Section */
+        .notes-section {
+            background: #fffbeb;
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        .notes-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #92400e;
+            margin-bottom: 12px;
+        }
+
+        .notes-text {
+            color: #78350f;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Footer */
+        .doc-footer {
+            text-align: center;
+            padding: 32px;
+            background: #f8fafc;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .footer-text {
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .contact-info {
+            margin-top: 16px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .action-bar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: stretch;
+            }
+
+            .action-buttons {
+                width: 100%;
+            }
+
+            .action-btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .doc-body {
+                padding: 24px;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .items-table {
+                font-size: 13px;
+            }
+
+            .items-table th,
+            .items-table td {
+                padding: 12px 8px;
+            }
+
+            .doc-header {
+                padding: 24px;
+            }
+
+            .company-name {
+                font-size: 24px;
+            }
+
+            .doc-type {
+                font-size: 20px;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .action-bar {
+                display: none;
+            }
+
+            .document-card {
+                box-shadow: none;
+            }
+
+            .action-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Action Bar -->
+        <div class="action-bar">
+            <button class="back-btn" onclick="goBack()">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                กลับ
+            </button>
+            
+            <div class="action-buttons">
+                <button class="action-btn print" onclick="printDocument()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    พิมพ์
+                </button>
+                <button class="action-btn primary" onclick="downloadPDF()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    ดาวน์โหลด PDF
+                </button>
+            </div>
+        </div>
+
+        <!-- Document Card -->
+        <div class="document-card">
+            <!-- Document Header -->
+            <div class="doc-header">
+                <div class="logo-section">
+                    <div class="logo-icon">
+                        <div class="logo-block large"></div>
+                        <div class="logo-block small"></div>
+                    </div>
+                    <div class="company-name">ROOMIN</div>
+                </div>
+                
+                <div class="doc-type" id="docType">ใบแจ้งหนี้</div>
+                <div class="doc-number" id="docNumber">INV-2025-0001</div>
+                <div class="status-badge unpaid" id="statusBadge">ค้างชำระ</div>
+            </div>
+
+            <!-- Document Body -->
+            <div class="doc-body">
+                <!-- Info Grid -->
+                <div class="info-grid">
+                    <div class="info-section">
+                        <div class="info-title">ข้อมูลผู้เช่า</div>
+                        <div class="info-row">
+                            <span class="info-label">ชื่อ-นามสกุล:</span>
+                            <span class="info-value">คุณ อเนชา</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">หมายเลขห้อง:</span>
+                            <span class="info-value" id="roomNumber">1104</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">ประเภทห้อง:</span>
+                            <span class="info-value">ห้องพักอาศัย</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">เบอร์โทรศัพท์:</span>
+                            <span class="info-value">089-xxx-xxxx</span>
+                        </div>
+                    </div>
+
+                    <div class="info-section">
+                        <div class="info-title">รายละเอียดเอกสาร</div>
+                        <div class="info-row">
+                            <span class="info-label">วันที่ออกเอกสาร:</span>
+                            <span class="info-value" id="issueDate">01/09/2025</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">วันครบกำหนดชำระ:</span>
+                            <span class="info-value" id="dueDate">10/09/2025</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">ระยะเวลา:</span>
+                            <span class="info-value">กันยายน 2025</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">ผู้ออกเอกสาร:</span>
+                            <span class="info-value">ฝ่ายบัญชี</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items Table -->
+                <div class="items-section">
+                    <div class="section-title">รายการค่าใช้จ่าย</div>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">#</th>
+                                <th>รายการ</th>
+                                <th style="width: 150px;">รายละเอียด</th>
+                                <th style="width: 150px;">จำนวนเงิน (บาท)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="itemsTableBody">
+                            <tr>
+                                <td>1</td>
+                                <td>ค่าเช่าห้อง</td>
+                                <td>เดือนกันยายน 2025</td>
+                                <td>5,000.00</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>ค่าน้ำประปา</td>
+                                <td>20 หน่วย × 10 บาท</td>
+                                <td>200.00</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>ค่าไฟฟ้า</td>
+                                <td>50 หน่วย × 6 บาท</td>
+                                <td>300.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Summary -->
+                <div class="summary-section">
+                    <div class="summary-row">
+                        <span class="summary-label">รวมค่าใช้จ่าย:</span>
+                        <span class="summary-value">5,500.00 บาท</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">ส่วนลด:</span>
+                        <span class="summary-value">0.00 บาท</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span class="summary-label">ยอดรวมทั้งสิ้น:</span>
+                        <span class="summary-value" id="totalAmount">5,500.00 บาท</span>
+                    </div>
+                </div>
+
+                <!-- Payment Info (Show only if paid) -->
+                <div class="payment-info" id="paymentInfo" style="display: none;">
+                    <div class="payment-info-title">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        ข้อมูลการชำระเงิน
+                    </div>
+                    <div class="payment-info-row">
+                        <span class="payment-info-label">วันที่ชำระ:</span>
+                        <span class="payment-info-value" id="paymentDate">05/09/2025</span>
+                    </div>
+                    <div class="payment-info-row">
+                        <span class="payment-info-label">วิธีการชำระ:</span>
+                        <span class="payment-info-value">โอนเงินผ่านธนาคาร</span>
+                    </div>
+                    <div class="payment-info-row">
+                        <span class="payment-info-label">หมายเลขอ้างอิง:</span>
+                        <span class="payment-info-value" id="refNumber">REF-202509-0001</span>
+                    </div>
+                </div>
+
+                <!-- Notes -->
+                <div class="notes-section">
+                    <div class="notes-title">หมายเหตุและเงื่อนไข</div>
+                    <div class="notes-text">
+                        • กรุณาชำระค่าเช่าภายในวันที่กำหนด มิฉะนั้นจะมีค่าปรับวันละ 100 บาท<br>
+                        • กรุณาโอนเงินเข้าบัญชีธนาคารไทยพาณิชย์ เลขที่ 123-4-56789-0 ชื่อบัญชี ROOMIN CO., LTD.<br>
+                        • เมื่อชำระเงินแล้ว กรุณาส่งหลักฐานการโอนเงินมาที่ Line: @roomin หรือ Email: payment@roomin.com<br>
+                        • หากมีข้อสงสัยหรือปัญหาใดๆ กรุณาติดต่อฝ่ายบัญชี โทร. 02-xxx-xxxx
+                    </div>
+                </div>
+            </div>
+
+            <!-- Document Footer -->
+            <div class="doc-footer">
+                <div class="footer-text">
+                    เอกสารนี้ออกโดยระบบอัตโนมัติ ไม่ต้องลงลายมือชื่อ<br>
+                    หากพบข้อผิดพลาดหรือมีคำถาม กรุณาติดต่อเราได้ทันที
+                </div>
+                <div class="contact-info">
+                    ROOMIN Apartment Management<br>
+                    📞 02-xxx-xxxx | 📧 contact@roomin.com | 🌐 www.roomin.com
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ดึงข้อมูลจาก URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const room = urlParams.get('room');
+        const status = urlParams.get('status');
+        const index = urlParams.get('index');
+        const issueDate = urlParams.get('issueDate');
+        const dueDate = urlParams.get('dueDate');
+        const paymentDate = urlParams.get('paymentDate');
+        const amount = urlParams.get('amount');
+
+        // อัปเดตข้อมูลในหน้า
+        function updateDocumentData() {
+            // Update document type and status
+            const docType = document.getElementById('docType');
+            const docNumber = document.getElementById('docNumber');
+            const statusBadge = document.getElementById('statusBadge');
+            const paymentInfo = document.getElementById('paymentInfo');
+
+            if (status === 'paid') {
+                docType.textContent = 'ใบเสร็จรับเงิน';
+                docNumber.textContent = `REC-2025-${String(room).padStart(4, '0')}`;
+                statusBadge.textContent = 'ชำระแล้ว';
+                statusBadge.className = 'status-badge paid';
+                
+                // Show payment info
+                paymentInfo.style.display = 'block';
+                document.getElementById('paymentDate').textContent = paymentDate || '-';
+                document.getElementById('refNumber').textContent = `REF-2025${String(room).padStart(4, '0')}`;
+            } else if (status === 'pending') {
+                docType.textContent = 'ใบแจ้งหนี้';
+                docNumber.textContent = `INV-2025-${String(room).padStart(4, '0')}`;
+                statusBadge.textContent = 'รอตรวจสอบ';
+                statusBadge.className = 'status-badge pending';
+            } else {
+                docType.textContent = 'ใบแจ้งหนี้';
+                docNumber.textContent = `INV-2025-${String(room).padStart(4, '0')}`;
+                statusBadge.textContent = 'ค้างชำระ';
+                statusBadge.className = 'status-badge unpaid';
+            }
+
+            // Update dates and amounts
+            if (room) document.getElementById('roomNumber').textContent = room;
+            if (issueDate) document.getElementById('issueDate').textContent = issueDate;
+            if (dueDate) document.getElementById('dueDate').textContent = dueDate;
+            if (amount) document.getElementById('totalAmount').textContent = amount;
+        }
+
+        // กลับไปหน้าก่อนหน้า
+        function goBack() {
+            window.history.back();
+        }
+
+        // พิมพ์เอกสาร
+        function printDocument() {
+            window.print();
+        }
+
+        // ดาวน์โหลด PDF
+        function downloadPDF() {
+            const docType = status === 'paid' ? 'ใบเสร็จ' : 'ใบแจ้งหนี้';
+            const fileName = `${docType}_ห้อง${room}_${issueDate.replace(/\//g, '')}.pdf`;
+            
+            alert(`กำลังดาวน์โหลดไฟล์: ${fileName}\n\nในระบบจริง ไฟล์ PDF จะถูกสร้างและดาวน์โหลดจาก server`);
+            
+            // ในระบบจริง คุณจะเรียก API เพื่อสร้าง PDF
+            // fetch(`/api/generate-pdf?room=${room}&status=${status}`)
+            //     .then(response => response.blob())
+            //     .then(blob => {
+            //         const url = window.URL.createObjectURL(blob);
+            //         const a = document.createElement('a');
+            //         a.href = url;
+            //         a.download = fileName;
+            //         a.click();
+            //     });
+        }
+
+        // Initialize
+        updateDocumentData();
+    </script>
+</body>
+</html>
