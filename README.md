@@ -1,2 +1,3 @@
 # Roomin
-# Use JS html/css
+# prisma
+# npx prisma generate npx prisma db pull  

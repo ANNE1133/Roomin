@@ -1,15 +1,161 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["public"]
+}
+
+model User {
+  UserID   Int     @id @default(autoincrement())
+  authId   String  @unique
+  fullName String
+  email    String
+  phone    String?
+  role     Role    @default(TENANT)
+  tenant   Tenant? @relation("UserTenant")
+
+  @@schema("public")
+}
+
+model Dormitory {
+  Dormitoryid   Int        @id @default(autoincrement())
+  Dormitoryname String
+  address       String?
+  phone         String?
+  ownerAuthId   String?
+  buildings     Building[]
+
+  @@schema("public")
+}
+
+model Building {
+  BuildingID   Int       @id @default(autoincrement())
+  BuildingName String
+  dormitoryId  Int
+  dormitory    Dormitory @relation(fields: [dormitoryId], references: [Dormitoryid])
+  rooms        Room[]
+
+  @@schema("public")
+}
+
+model Room {
+  RoomID     Int        @id @default(autoincrement())
+  price      Float
+  statusId   Int
+  buildingId Int
+  contracts  Contract[]
+  invoices   Invoice[]
+  building   Building   @relation(fields: [buildingId], references: [BuildingID])
+  status     Status     @relation(fields: [statusId], references: [StatusID])
+
+  @@schema("public")
+}
+
+model Status {
+  StatusID Int       @id @default(autoincrement())
+  Type     String
+  name     String
+  invoices Invoice[]
+  items    Item[]
+  rooms    Room[]
+
+  @@schema("public")
+}
+
+model Tenant {
+  TenantID  Int        @id @default(autoincrement())
+  FName     String
+  LName     String
+  Name      String
+  Gmail     String
+  Tel       String
+  userId    Int?       @unique
+  contracts Contract[]
+  roommates Roommate[]
+  user      User?      @relation("UserTenant", fields: [userId], references: [UserID])
+
+  @@schema("public")
+}
+
+model Roommate {
+  RoommateID Int    @id @default(autoincrement())
+  FName      String
+  LName      String
+  Name       String
+  Gmail      String
+  Tel        String
+  tenantId   Int
+  tenant     Tenant @relation(fields: [tenantId], references: [TenantID])
+
+  @@schema("public")
+}
+
+model Contract {
+  ContractID Int      @id @default(autoincrement())
+  Code       String
+  DayStart   DateTime
+  DayEnd     DateTime
+  roomId     Int
+  tenantId   Int
+  room       Room     @relation(fields: [roomId], references: [RoomID])
+  tenant     Tenant   @relation(fields: [tenantId], references: [TenantID])
+
+  @@schema("public")
+}
+
+model Invoice {
+  InvoiceID Int        @id @default(autoincrement())
+  Date      DateTime
+  roomId    Int
+  statusId  Int
+  room      Room       @relation(fields: [roomId], references: [RoomID])
+  status    Status     @relation(fields: [statusId], references: [StatusID])
+  itemlists ItemList[]
+  receipts  Receipt[]
+
+  @@schema("public")
+}
+
+model ItemList {
+  ItemListID Int     @id @default(autoincrement())
+  invoiceId  Int
+  itemId     Int
+  quantity   Int
+  invoice    Invoice @relation(fields: [invoiceId], references: [InvoiceID])
+  item       Item    @relation(fields: [itemId], references: [ItemID])
+
+  @@schema("public")
+}
+
+model Item {
+  ItemID    Int        @id @default(autoincrement())
+  name      String
+  price     Float
+  statusId  Int
+  status    Status     @relation(fields: [statusId], references: [StatusID])
+  itemlists ItemList[]
+
+  @@schema("public")
+}
+
+model Receipt {
+  ReceiptID Int      @id @default(autoincrement())
+  amount    Float
+  date      DateTime
+  proof     String?
+  invoiceId Int
+  invoice   Invoice  @relation(fields: [invoiceId], references: [InvoiceID])
+
+  @@schema("public")
+}
+
+enum Role {
+  TENANT
+  OWNER
+
+  @@schema("public")
 }

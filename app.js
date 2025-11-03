@@ -26,7 +26,7 @@
 // app.listen(port, () => {
 //     console.log(`Server is running on port ${port}`);
 // });
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
