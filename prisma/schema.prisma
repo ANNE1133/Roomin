@@ -1,0 +1,127 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Building {
+  BuildingID   Int       @id @default(autoincrement())
+  BuildingName String
+  dormitoryId  Int
+  Dormitory    Dormitory @relation(fields: [dormitoryId], references: [Dormitoryid])
+  Room         Room[]
+}
+
+model Contract {
+  ContractID Int      @id @default(autoincrement())
+  Code       String
+  DayStart   DateTime
+  DayEnd     DateTime
+  roomId     Int
+  userId     Int
+  Room       Room     @relation(fields: [roomId], references: [RoomID])
+  User       User     @relation(fields: [userId], references: [UserID])
+}
+
+model Dormitory {
+  Dormitoryid   Int        @id @default(autoincrement())
+  Dormitoryname String
+  address       String?
+  phone         String?
+  ownerAuthId   String?
+  Building      Building[]
+}
+
+model Invoice {
+  InvoiceID Int        @id @default(autoincrement())
+  Date      DateTime
+  roomId    Int
+  statusId  Int
+  userId    Int
+  Room      Room       @relation(fields: [roomId], references: [RoomID])
+  Status    Status     @relation(fields: [statusId], references: [StatusID])
+  User      User       @relation(fields: [userId], references: [UserID])
+  ItemList  ItemList[]
+  Receipt   Receipt[]
+}
+
+model Item {
+  ItemID   Int        @id @default(autoincrement())
+  name     String
+  price    Float
+  statusId Int
+  Status   Status     @relation(fields: [statusId], references: [StatusID])
+  ItemList ItemList[]
+}
+
+model ItemList {
+  ItemListID Int     @id @default(autoincrement())
+  invoiceId  Int
+  itemId     Int
+  quantity   Int
+  Invoice    Invoice @relation(fields: [invoiceId], references: [InvoiceID])
+  Item       Item    @relation(fields: [itemId], references: [ItemID])
+}
+
+model Receipt {
+  ReceiptID Int      @id @default(autoincrement())
+  amount    Float
+  date      DateTime
+  proof     String?
+  invoiceId Int
+  Invoice   Invoice  @relation(fields: [invoiceId], references: [InvoiceID])
+}
+
+model Room {
+  RoomID     Int        @id @default(autoincrement())
+  price      Float
+  statusId   Int
+  buildingId Int
+  Contract   Contract[]
+  Invoice    Invoice[]
+  Building   Building   @relation(fields: [buildingId], references: [BuildingID])
+  Status     Status     @relation(fields: [statusId], references: [StatusID])
+}
+
+model Roommate {
+  RoommateID Int    @id @default(autoincrement())
+  FName      String
+  LName      String
+  Name       String
+  Gmail      String
+  Tel        String
+  userId     Int
+  User       User   @relation(fields: [userId], references: [UserID])
+}
+
+model Status {
+  StatusID Int       @id @default(autoincrement())
+  Type     String
+  name     String
+  Invoice  Invoice[]
+  Item     Item[]
+  Room     Room[]
+}
+
+model User {
+  UserID   Int        @id @default(autoincrement())
+  authId   String     @unique
+  email    String
+  phone    String?
+  role     Role       @default(TENANT)
+  FName    String
+  LName    String
+  Name     String
+  Contract Contract[]
+  Invoice  Invoice[]
+  Roommate Roommate[]
+}
+
+enum Role {
+  TENANT
+  OWNER
+}

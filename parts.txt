@@ -1,0 +1,27 @@
+งานที่แบ่งสำหรับ 6 คน (ระบบหอพัก)
+
+👤 คนที่ 1 → Authentication (Login/Register)
+Frontend: หน้า login, register
+Backend: API /api/auth/register, /api/auth/login
+Database: ตาราง users
+
+👤 คนที่ 2 → Invoice (สร้าง/ดูใบแจ้งหนี้)
+Frontend: หน้า สร้างใบแจ้งหนี้, ดูใบแจ้งหนี้
+Backend: API /api/invoice/create, /api/invoice/:userId
+Database: ตาราง invoices
+
+👤 คนที่ 3 → Payment (การชำระเงิน)
+Frontend: หน้า payment form, history
+Backend: API /api/payment/pay, /api/payment/history
+Database: ตาราง payments
+
+👤 คนที่ 4 → UI & Layout หลัก
+Frontend: Dashboard, Navbar, หน้าแรก
+รวม component พื้นฐานที่ทุกคนใช้ (เช่น ปุ่ม, ฟอร์ม, card)
+ช่วยเชื่อมต่อ backend API กับ UI
+
+👤 คนที่ 5 → Database & Integration
+ออกแบบ ER Diagram (Users, Invoices, Payments)
+สร้าง schema.sql / migration
+จัดการ config database ให้ backend ใช้งานได้
+ช่วยทดสอบ flow ทั้งระบบ (login → ดูใบแจ้งหนี้ → จ่ายเงิน)

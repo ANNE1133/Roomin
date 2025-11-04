@@ -1,0 +1,77 @@
+// const express = require ( 'express' ); 
+// // const router = require ('./backend/routers/users.js')
+// const app = express ();
+// // const path = require('path');
+// const { readdirSync } = require('fs')
+// const cors = require('cors');
+// const morgan = require('morgan');
+
+// // middleware
+// app.use(morgan('dev'))
+// app.use(express.json())
+// app.use(cors())
+
+// readdirSync('./backend/routers')
+//   .forEach((c) => app.use('/api', require('./backend/routers/' + c)));
+
+
+
+// // app.set('views',path.join(__dirname,'views'))
+// // app.set('view engine','ejs')
+// // app.use(router)
+// // app.use(express.static(path.join(__dirname,'public')))
+
+
+// const port = process.env.PORT || 3000; // You can use environment variables for port configuration
+// app.listen(port, () => {
+//     console.log(`Server is running on port ${port}`);
+// });
+import dotenv from "dotenv";
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
+import { readdirSync } from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
+import authRouter from './backend/routers/auth.js';
+
+
+dotenv.config();
+
+
+
+const app = express();
+
+// 🔹 Middleware
+app.use(morgan('dev'));
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+// ใช้เพื่อให้ __dirname ใช้งานได้ใน ES Module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.json()); // สำหรับ JSON body
+app.use(express.urlencoded({ extended: true })); // สำหรับ form body (เช่น <form> POST)
+
+app.set('view engine', 'ejs'); // 1. บอกว่าเราใช้ "EJS"
+app.set('views', path.join(__dirname, 'views')); // 2. บอกว่า "ม้วนฟิล์ม" (.ejs) อยู่ในโฟลเดอร์ /views
+app.use(express.static(path.join(__dirname, 'public'))); // 3. (โบนัส) บอกว่าไฟล์ CSS/JS/รูปภาพ อยู่ใน /public
+// 🔹 โหลด routes ทั้งหมดจาก ./backend/routers
+
+app.use('/auth', authRouter);
+const routerFiles = readdirSync('./backend/routers');
+for (const file of routerFiles) {
+  const routeName = file.split('.')[0];
+  const { default: router } = await import(`./backend/routers/${file}`);
+  app.use(`/api/${routeName}`, router);
+}
+
+
+// 🔹 Start server
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`✅ Server is running on port ${port}`);
+});
