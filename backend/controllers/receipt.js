@@ -39,7 +39,7 @@ export const getAllReceipts = async (req, res) => {
                     }
                   },
                   include: {
-                    tenant: true
+                    user: true
                   }
                 }
               }
@@ -89,12 +89,7 @@ export const getReceiptById = async (req, res) => {
                     }
                   },
                   include: {
-                    tenant: {
-                      include: {
-                        user: true,
-                        roommates: true
-                      }
-                    }
+                    user: true
                   }
                 }
               }

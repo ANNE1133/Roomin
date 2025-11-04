@@ -1,43 +1,32 @@
+// routes/invoiceRoutes.js
 import express from 'express';
-// import {
-//   getAllRooms,
-//   getAvailableRooms,
-//   getRoomById,
-//   createRoom,
-//   updateRoom,
-//   deleteRoom
-// } from '../controllers/room.js';
+import {
+  getAllInvoices,
+  getUnpaidInvoices,
+  getInvoiceById,
+  createInvoice,
+  updateInvoiceStatus,
+  deleteInvoice
+} from '../controllers/invoice.js';
 
 const router = express.Router();
 
-// ดูใบแจ้งหนี้ทั้งหมด
-router.get('/invoices', async (req, res) => {
-  return res.json({ message: 'Get all invoices' });
-});
+// GET /api/invoices - ดึงใบแจ้งหนี้ทั้งหมด (รองรับ ?roomId=1&dormitoryId=1&month=1&year=2024)
+router.get('/invoices', getAllInvoices);
 
-// ดูใบแจ้งหนี้ของตัวเอง
-router.get('/invoice/myinvoice', async (req, res) => {
-  return res.json({ message: 'Get my invoices' });
-});
+// GET /api/invoices/unpaid - ดึงใบแจ้งหนี้ที่ยังไม่ชำระ (รองรับ ?dormitoryId=1)
+router.get('/invoices/unpaid', getUnpaidInvoices);
 
-// ดูใบแจ้งหนี้ตาม ID
-router.get('/invoice/:id', async (req, res) => {
-  return res.json({ message: 'Get invoice by ID' });
-});
+// GET /api/invoices/:id - ดึงใบแจ้งหนี้ตาม ID
+router.get('/invoices/:id', getInvoiceById);
 
-// สร้างใบแจ้งหนี้ใหม่
-router.post('/invoice/create', async (req, res) => {
-  return res.json({ message: 'Create invoice' });
-});
+// POST /api/invoices - สร้างใบแจ้งหนี้ใหม่
+router.post('/invoices', createInvoice);
 
-// แก้ไขใบแจ้งหนี้
-router.put('/invoice/:id', async (req, res) => {
-  return res.json({ message: 'Update invoice' });
-});
+// PATCH /api/invoices/:id/status - อัพเดทสถานะใบแจ้งหนี้
+router.patch('/invoices/:id/status', updateInvoiceStatus);
 
-// ดาวน์โหลด PDF
-router.get('/invoice/:id/pdf', async (req, res) => {
-  return res.json({ message: 'Download PDF' });
-});
+// DELETE /api/invoices/:id - ลบใบแจ้งหนี้
+router.delete('/invoices/:id', deleteInvoice);
 
 export default router;

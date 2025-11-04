@@ -30,7 +30,7 @@ export const deleteDormitory = async (req, res) => {
     const { id } = req.params;
 
     const dormitory  = await prisma.dormitory .delete({
-      where: { DormitoryID: parseInt(id) },
+      where: { Dormitoryid: parseInt(id) },
     });
 
     res.json({ message: 'Dormitory deleted', dormitory });

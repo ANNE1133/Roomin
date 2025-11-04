@@ -221,7 +221,7 @@ export const getAvailableRooms = async (req, res) => {
     const availableStatus = await prisma.status.findFirst({
       where: {
         Type: 'ROOM',
-        name: 'ว่าง'
+        name: 'Available'
       }
     });
     

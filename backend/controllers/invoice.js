@@ -52,7 +52,7 @@ export const getAllInvoices = async (req, res) => {
                 }
               },
               include: {
-                tenant: true
+                user: true
               }
             }
           }
@@ -105,7 +105,7 @@ export const getUnpaidInvoices = async (req, res) => {
       where: {
         Type: 'INVOICE',
         name: {
-          in: ['รอชำระ', 'เกินกำหนด']
+          in: ['Pending', 'Pastdue']
         }
       }
     });
@@ -143,7 +143,7 @@ export const getUnpaidInvoices = async (req, res) => {
                 }
               },
               include: {
-                tenant: true
+                user: true
               }
             }
           }
@@ -208,9 +208,8 @@ export const getInvoiceById = async (req, res) => {
                 }
               },
               include: {
-                tenant: {
+                user: {
                   include: {
-                    user: true,
                     roommates: true
                   }
                 }
@@ -261,13 +260,13 @@ export const getInvoiceById = async (req, res) => {
 // สร้างใบแจ้งหนี้ใหม่ พร้อมรายการค่าใช้จ่าย
 export const createInvoice = async (req, res) => {
   try {
-    const { Date: invoiceDate, roomId, statusId, items } = req.body;
+    const { Date: invoiceDate, roomId, statusId, userId } = req.body;
     // items = [{ itemId: 1, quantity: 1 }, { itemId: 2, quantity: 50 }, ...]
     
     // Validation
-    if (!invoiceDate || !roomId || !statusId || !items || !Array.isArray(items)) {
+    if (!invoiceDate || !roomId || !statusId || !userId ) {
       return res.status(400).json({ 
-        error: 'Invoice date, room ID, status ID, and items array are required' 
+        error: 'Invoice date, room ID, status ID, and user ID are required'
       });
     }
     
@@ -291,69 +290,53 @@ export const createInvoice = async (req, res) => {
     if (!status) {
       return res.status(404).json({ error: 'Invoice status not found' });
     }
-    
-    // ตรวจสอบว่า items ทั้งหมดมีอยู่จริง
-    const itemIds = items.map(item => parseInt(item.itemId));
-    const existingItems = await prisma.item.findMany({
-      where: {
-        ItemID: {
-          in: itemIds
-        }
-      }
+        // ตรวจสอบ user
+    const user = await prisma.user.findUnique({
+      where: { UserID: parseInt(userId) }
     });
+    if (!user) return res.status(404).json({ error: 'User not found' });
     
-    if (existingItems.length !== itemIds.length) {
-      return res.status(404).json({ error: 'One or more items not found' });
-    }
+    // if (existingItems.length !== itemIds.length) {
+    //   return res.status(404).json({ error: 'One or more items not found' });
+    // }
     
     // สร้างใบแจ้งหนี้และรายการพร้อมกัน (Transaction)
-    const invoice = await prisma.$transaction(async (tx) => {
+    // const invoice = await prisma.$transaction(async (tx) => {
       // สร้างใบแจ้งหนี้
-      const newInvoice = await tx.invoice.create({
+      const invoice = await prisma.invoice.create({
         data: {
           Date: new Date(invoiceDate),
           roomId: parseInt(roomId),
-          statusId: parseInt(statusId)
-        }
-      });
-      
-      // สร้างรายการค่าใช้จ่าย
-      await tx.itemList.createMany({
-        data: items.map(item => ({
-          invoiceId: newInvoice.InvoiceID,
-          itemId: parseInt(item.itemId),
-          quantity: parseInt(item.quantity)
-        }))
-      });
-      
-      // ดึงข้อมูลที่สร้างพร้อม relations
-      return await tx.invoice.findUnique({
-        where: { InvoiceID: newInvoice.InvoiceID },
+          userId: parseInt(userId),
+          statusId: parseInt(statusId),
+        },
         include: {
+          user: true,
           room: {
             include: {
               building: {
                 include: {
-                  dormitory: true
-                }
-              }
-            }
+                  dormitory: true,
+                },
+              },
+            },
           },
           status: true,
           itemlists: {
-            include: {
-              item: true
-            }
-          }
-        }
+            include: { item: true },
+          },
+        },
       });
-    });
+    // });
     
     // คำนวณยอดรวม
-    const total = invoice.itemlists.reduce(
-      (sum, itemlist) => sum + (itemlist.quantity * itemlist.item.price),
-      0
-    );
+    const total =
+      invoice.itemlists && invoice.itemlists.length > 0
+        ? invoice.itemlists.reduce(
+            (sum, itemlist) => sum + itemlist.quantity * itemlist.item.price,
+            0
+          )
+        : 0;
     
     res.status(201).json({
       ...invoice,

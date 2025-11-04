@@ -18,7 +18,7 @@ export const getAllItems = async (req, res) => {
       const activeStatus = await prisma.status.findFirst({
         where: {
           Type: 'ITEM',
-          name: 'ใช้งาน'
+          name: 'Active'
         }
       });
       
@@ -55,7 +55,7 @@ export const getActiveItems = async (req, res) => {
     const activeStatus = await prisma.status.findFirst({
       where: {
         Type: 'ITEM',
-        name: 'ใช้งาน'
+        name: 'Active'
       }
     });
     

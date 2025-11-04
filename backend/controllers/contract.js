@@ -5,12 +5,12 @@ import prisma from '../config/prisma.js';
 // ดึงข้อมูลสัญญาทั้งหมด
 export const getAllContracts = async (req, res) => {
   try {
-    const { tenantId, roomId, active } = req.query;
+    const { userId , roomId, active } = req.query;
     
     const where = {};
     
-    if (tenantId) {
-      where.tenantId = parseInt(tenantId);
+    if (userId ) {
+      where.userId  = parseInt(userId);
     }
     
     if (roomId) {
@@ -27,9 +27,8 @@ export const getAllContracts = async (req, res) => {
     const contracts = await prisma.contract.findMany({
       where,
       include: {
-        tenant: {
+        user: {
           include: {
-            user: true,
             roommates: true
           }
         },
@@ -66,9 +65,8 @@ export const getActiveContracts = async (req, res) => {
         }
       },
       include: {
-        tenant: {
+        user: {
           include: {
-            user: true,
             roommates: true
           }
         },
@@ -112,9 +110,8 @@ export const getExpiringContracts = async (req, res) => {
         }
       },
       include: {
-        tenant: {
+        user: {
           include: {
-            user: true,
             roommates: true
           }
         },
@@ -148,9 +145,8 @@ export const getContractById = async (req, res) => {
     const contract = await prisma.contract.findUnique({
       where: { ContractID: parseInt(id) },
       include: {
-        tenant: {
+        user: {
           include: {
-            user: true,
             roommates: true
           }
         },
@@ -194,10 +190,10 @@ export const getContractById = async (req, res) => {
 // สร้างสัญญาใหม่ (พร้อมอัพเดทสถานะห้องเป็น "มีผู้เช่า")
 export const createContract = async (req, res) => {
   try {
-    const { Code, DayStart, DayEnd, roomId, tenantId } = req.body;
+    const { Code, DayStart, DayEnd, roomId, userId } = req.body;
     
     // Validation
-    if (!Code || !DayStart || !DayEnd || !roomId || !tenantId) {
+    if (!Code || !DayStart || !DayEnd || !roomId || !userId ) {
       return res.status(400).json({ 
         error: 'All contract information is required' 
       });
@@ -214,18 +210,18 @@ export const createContract = async (req, res) => {
     }
     
     // ตรวจสอบว่าห้องว่างหรือไม่
-    if (room.status.name !== 'ว่าง') {
+    if (room.status.name !== 'Available') {
       return res.status(400).json({ 
         error: 'Room is not available for rent' 
       });
     }
     
     // ตรวจสอบว่าผู้เช่ามีอยู่จริง
-    const tenant = await prisma.tenant.findUnique({
-      where: { TenantID: parseInt(tenantId) }
+    const user = await prisma.user.findUnique({
+      where: { UserID: parseInt(userId) }
     });
     
-    if (!tenant) {
+    if (!user) {
       return res.status(404).json({ error: 'Tenant not found' });
     }
     
@@ -243,7 +239,7 @@ export const createContract = async (req, res) => {
     const occupiedStatus = await prisma.status.findFirst({
       where: {
         Type: 'ROOM',
-        name: 'มีผู้เช่า'
+        name: 'Occupied'
       }
     });
     
@@ -262,12 +258,11 @@ export const createContract = async (req, res) => {
           DayStart: new Date(DayStart),
           DayEnd: new Date(DayEnd),
           roomId: parseInt(roomId),
-          tenantId: parseInt(tenantId)
+          userId: parseInt(userId)
         },
         include: {
-          tenant: {
+          user: {
             include: {
-              user: true,
               roommates: true
             }
           },
@@ -306,7 +301,7 @@ export const createContract = async (req, res) => {
 export const updateContract = async (req, res) => {
   try {
     const { id } = req.params;
-    const { Code, DayStart, DayEnd, roomId, tenantId } = req.body;
+    const { Code, DayStart, DayEnd, roomId, userId } = req.body;
     
     // ตรวจสอบวันที่ถ้ามีการส่งมา
     if (DayStart && DayEnd) {
@@ -327,12 +322,11 @@ export const updateContract = async (req, res) => {
         ...(DayStart && { DayStart: new Date(DayStart) }),
         ...(DayEnd && { DayEnd: new Date(DayEnd) }),
         ...(roomId && { roomId: parseInt(roomId) }),
-        ...(tenantId && { tenantId: parseInt(tenantId) })
+        ...(userId && { userId: parseInt(userId) })
       },
       include: {
-        tenant: {
+        user: {
           include: {
-            user: true,
             roommates: true
           }
         },
@@ -381,7 +375,7 @@ export const terminateContract = async (req, res) => {
     const availableStatus = await prisma.status.findFirst({
       where: {
         Type: 'ROOM',
-        name: 'ว่าง'
+        name: 'Available'
       }
     });
     

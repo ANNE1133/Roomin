@@ -12,11 +12,15 @@ datasource db {
 model User {
   UserID   Int     @id @default(autoincrement())
   authId   String  @unique
-  fullName String
+  FName     String
+  LName     String
+  Name      String
   email    String
   phone    String?
   role     Role    @default(TENANT)
-  tenant   Tenant? @relation("UserTenant")
+  contracts  Contract[]
+  roommates  Roommate[]
+  invoices   Invoice[]  
 
   @@schema("public")
 }
@@ -66,21 +70,6 @@ model Status {
   @@schema("public")
 }
 
-model Tenant {
-  TenantID  Int        @id @default(autoincrement())
-  FName     String
-  LName     String
-  Name      String
-  Gmail     String
-  Tel       String
-  userId    Int?       @unique
-  contracts Contract[]
-  roommates Roommate[]
-  user      User?      @relation("UserTenant", fields: [userId], references: [UserID])
-
-  @@schema("public")
-}
-
 model Roommate {
   RoommateID Int    @id @default(autoincrement())
   FName      String
@@ -88,9 +77,9 @@ model Roommate {
   Name       String
   Gmail      String
   Tel        String
-  tenantId   Int
-  tenant     Tenant @relation(fields: [tenantId], references: [TenantID])
-
+  userId     Int
+  user       User   @relation(fields: [userId], references: [UserID])
+  
   @@schema("public")
 }
 
@@ -100,10 +89,10 @@ model Contract {
   DayStart   DateTime
   DayEnd     DateTime
   roomId     Int
-  tenantId   Int
-  room       Room     @relation(fields: [roomId], references: [RoomID])
-  tenant     Tenant   @relation(fields: [tenantId], references: [TenantID])
-
+  userId     Int
+  room       Room    @relation(fields: [roomId], references: [RoomID])
+  user       User    @relation(fields: [userId], references: [UserID])
+  
   @@schema("public")
 }
 
@@ -111,8 +100,10 @@ model Invoice {
   InvoiceID Int        @id @default(autoincrement())
   Date      DateTime
   roomId    Int
+  userId    Int
   statusId  Int
   room      Room       @relation(fields: [roomId], references: [RoomID])
+  user      User       @relation(fields: [userId], references: [UserID])
   status    Status     @relation(fields: [statusId], references: [StatusID])
   itemlists ItemList[]
   receipts  Receipt[]

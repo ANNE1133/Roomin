@@ -5,33 +5,17 @@ import prisma from '../config/prisma.js';
 // ดึงข้อมูลผู้อยู่ร่วมทั้งหมด
 export const getAllRoommates = async (req, res) => {
   try {
-    const { tenantId } = req.query; // Filter ตามผู้เช่า
-    
-    const where = tenantId ? { tenantId: parseInt(tenantId) } : {};
+    const { userId } = req.query; // Filter ตามผู้เช่า
+    const where = userId ? { userId: parseInt(userId) } : {};
     
     const roommates = await prisma.roommate.findMany({
       where,
       include: {
-        tenant: {
+        user: {
           include: {
-            contracts: {
-              where: {
-                DayEnd: {
-                  gte: new Date()
-                }
-              },
-              include: {
-                room: {
-                  include: {
-                    building: {
-                      include: {
-                        dormitory: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            contracts: true,
+            roommates: true,
+            invoices: true
           }
         }
       }
@@ -52,22 +36,11 @@ export const getRoommateById = async (req, res) => {
     const roommate = await prisma.roommate.findUnique({
       where: { RoommateID: parseInt(id) },
       include: {
-        tenant: {
+        user: {
           include: {
-            user: true,
-            contracts: {
-              include: {
-                room: {
-                  include: {
-                    building: {
-                      include: {
-                        dormitory: true
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            contracts: true,
+            roommates: true,
+            invoices: true
           }
         }
       }
@@ -87,11 +60,11 @@ export const getRoommateById = async (req, res) => {
 // ดึงผู้อยู่ร่วมทั้งหมดของผู้เช่าคนหนึ่ง
 export const getRoommatesByTenant = async (req, res) => {
   try {
-    const { tenantId } = req.params;
+    const { userId } = req.params;
     
     const roommates = await prisma.roommate.findMany({
       where: {
-        tenantId: parseInt(tenantId)
+        userId: parseInt(userId)
       }
     });
     
@@ -105,22 +78,22 @@ export const getRoommatesByTenant = async (req, res) => {
 // สร้างผู้อยู่ร่วมใหม่
 export const createRoommate = async (req, res) => {
   try {
-    const { FName, LName, Name, Gmail, Tel, tenantId } = req.body;
+    const { FName, LName, Name, Gmail, Tel, userId  } = req.body;
     
     // Validation
-    if (!FName || !LName || !Name || !Gmail || !Tel || !tenantId) {
+    if (!FName || !LName || !Name || !Gmail || !Tel || !userId ) {
       return res.status(400).json({ 
-        error: 'All roommate information and tenant ID are required' 
+        error: 'All roommate information and User  ID are required' 
       });
     }
     
     // ตรวจสอบว่าผู้เช่ามีอยู่จริง
-    const tenant = await prisma.tenant.findUnique({
-      where: { TenantID: parseInt(tenantId) }
+    const user  = await prisma.user .findUnique({
+      where: { UserID: parseInt(userId ) }
     });
     
-    if (!tenant) {
-      return res.status(404).json({ error: 'Tenant not found' });
+    if (!user ) {
+      return res.status(404).json({ error: 'User not found' });
     }
     
     const roommate = await prisma.roommate.create({
@@ -130,10 +103,10 @@ export const createRoommate = async (req, res) => {
         Name,
         Gmail,
         Tel,
-        tenantId: parseInt(tenantId)
+        userId: parseInt(userId)
       },
       include: {
-        tenant: true
+        user: true
       }
     });
     
@@ -144,23 +117,20 @@ export const createRoommate = async (req, res) => {
 };
 
 // PUT update roommate
-// อัพเดทข้อมูลผู้อยู่ร่วม
 export const updateRoommate = async (req, res) => {
   try {
     const { id } = req.params;
-    const { FName, LName, Name, Gmail, Tel, tenantId } = req.body;
-    
-    // ถ้ามีการเปลี่ยน tenantId ให้ตรวจสอบว่ามีผู้เช่านั้นอยู่
-    if (tenantId) {
-      const tenant = await prisma.tenant.findUnique({
-        where: { TenantID: parseInt(tenantId) }
+    const { FName, LName, Name, Gmail, Tel, userId } = req.body;
+
+    if (userId) {
+      const user = await prisma.user.findUnique({
+        where: { UserID: parseInt(userId) }
       });
-      
-      if (!tenant) {
-        return res.status(404).json({ error: 'Tenant not found' });
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
       }
     }
-    
+
     const roommate = await prisma.roommate.update({
       where: { RoommateID: parseInt(id) },
       data: {
@@ -169,13 +139,13 @@ export const updateRoommate = async (req, res) => {
         ...(Name && { Name }),
         ...(Gmail && { Gmail }),
         ...(Tel && { Tel }),
-        ...(tenantId && { tenantId: parseInt(tenantId) })
+        ...(userId && { userId: parseInt(userId) })
       },
       include: {
-        tenant: true
+        user: true
       }
     });
-    
+
     res.json(roommate);
   } catch (error) {
     if (error.code === 'P2025') {
@@ -186,15 +156,14 @@ export const updateRoommate = async (req, res) => {
 };
 
 // DELETE roommate
-// ลบผู้อยู่ร่วม
 export const deleteRoommate = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     await prisma.roommate.delete({
       where: { RoommateID: parseInt(id) }
     });
-    
+
     res.json({ message: 'Roommate deleted successfully' });
   } catch (error) {
     if (error.code === 'P2025') {

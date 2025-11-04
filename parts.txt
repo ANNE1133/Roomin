@@ -27,32 +27,22 @@ Frontend: Dashboard, Navbar, หน้าแรก
 ช่วยทดสอบ flow ทั้งระบบ (login → ดูใบแจ้งหนี้ → จ่ายเงิน)
 
 ระดับ 1: Master Data (ไม่มี dependencies)
-
-StatusController - ต้องทำก่อนเพราะหลาย model อ้างอิงถึง
-
-จัดการสถานะต่างๆ (ห้อง, ใบแจ้งหนี้, รายการ)
-
-
-UserController - จัดการข้อมูล User พื้นฐาน
+StatusController - ต้องทำก่อนเพราะหลาย model อ้างอิงถึง จัดการสถานะต่างๆ (ห้อง, ใบแจ้งหนี้, รายการ) /
+UserController - จัดการข้อมูล User พื้นฐาน /
 
 ระดับ 2: หน่วยงานหลัก
-
-DormitoryController - ข้อมูลหอพัก (ไม่ขึ้นกับ model อื่น)
-BuildingController - ขึ้นกับ Dormitory เท่านั้น
-TenantController - ข้อมูลผู้เช่า (อาจเชื่อมกับ User)
+DormitoryController - ข้อมูลหอพัก (ไม่ขึ้นกับ model อื่น) /
+BuildingController - ขึ้นกับ Dormitory เท่านั้น /
 
 ระดับ 3: ข้อมูลที่ขึ้นกับระดับ 2
-
-RoomController - ขึ้นกับ Building และ Status
-ItemController - รายการค่าใช้จ่าย (ขึ้นกับ Status)
-RoommateController - ขึ้นกับ Tenant
+RoomController - ขึ้นกับ Building และ Status /
+ItemController - รายการค่าใช้จ่าย (ขึ้นกับ Status) /
+RoommateController - ขึ้นกับ Tenant /
 
 ระดับ 4: ธุรกรรม
-
-ContractController - ขึ้นกับ Room และ Tenant
-InvoiceController - ขึ้นกับ Room และ Status
+ContractController - ขึ้นกับ Room และ Tenant /
+InvoiceController - ขึ้นกับ Room และ Status /
 
 ระดับ 5: รายละเอียดธุรกรรม
-
-ItemListController - ขึ้นกับ Invoice และ Item
-ReceiptController - ขึ้นกับ Invoice
+ItemListController - ขึ้นกับ Invoice และ Item /
+ReceiptController - ขึ้นกับ Invoice /
