@@ -1,27 +1,54 @@
-// const express = require('express');
+// import express from 'express';
+// import {
+//   register,
+//   login,
+//   showDashboard,
+//   handleGoogleLogin,
+//   handleGoogleCallback,
+//   checkProfile,
+//   showCompleteProfileForm,
+//   handleCompleteProfileSubmit,
+//   handleLogout
+// } from '../controllers/auth.js';
+
+
 // const router = express.Router();
 
-// const { register, login, user } = require('../controllers/auth');
+// router.get('/show-login', (req, res) => {
+//   res.render('login'); 
+// });
+// //google login
+// router.get('/login', handleGoogleLogin);
+// router.get('/callback', handleGoogleCallback);
+// router.post('/logout', handleLogout);
 
-// router.post('/register',register)
+// router.post('user/register',register)
 // router.post('/login',login)
-// router.post('/user',user)
-// router.post('/admin',user)
+// // router.post('/user',user)
+// // router.post('/admin',user)
 
-// module.exports = router
+// //complete profile
+// router.get('/check-profile', checkProfile);
+// router.get('/complete-profile', showCompleteProfileForm);
+// router.post('/complete-profile', handleCompleteProfileSubmit);
+// router.get('/dashboard', showDashboard);
+// router.post('/logout', handleLogout);
 
-import express from 'express';
+// verลองทำเอง ยังไม่ได้
+import express from "express";
 import {
-  register,
   login,
-  user
-} from '../controllers/auth.js';
+  handleGoogleLogin,
+  checkProfile,
+  handleCompleteProfileSubmit,
+} from "../controllers/auth.js";
 
 const router = express.Router();
 
-router.post('/register',register)
-router.post('/login',login)
-router.post('/user',user)
-router.post('/admin',user)
+router.post("/login", login);
+router.get("/google-login", handleGoogleLogin);
+router.get("/check-profile", checkProfile);
+router.post("/complete-profile", handleCompleteProfileSubmit);
 
 export default router;
+
