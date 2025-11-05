@@ -218,34 +218,46 @@ export const showCompleteProfileForm = (req, res) => {
 };
 
 // 6. (Controller ใหม่!) "รับ" ข้อมูลจากฟอร์ม (POST)
+// 6. (Controller อัปเกรด!) "รับ" ข้อมูลจากฟอร์ม (POST)
 export const handleCompleteProfileSubmit = async (req, res) => {
   const supabase = createSupabaseClient(req, res);
   
-  // 1. หาว่า "ฉันคือใคร" (จากคุกกี้)
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) return res.redirect('/auth/show-login');
+  try {
+    // 1. หาว่า "ฉันคือใคร" (จากคุกกี้)
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
 
-  // 2. ดึงข้อมูลจากฟอร์ม (req.body)
-  const { FName, LName, Name, phone } = req.body;
-  
-  // 3. (นี่คือ "INSERT" ใหม่!) สร้างข้อมูลในตาราง "User"
-  const { error } = await supabase.from('User').insert({
-    authId: user.id,          // ◀️ จาก Google Auth
-    email: user.email,        // ◀️ จาก Google Auth
-    FName: FName,             // ◀️ จากฟอร์ม
-    LName: LName,             // ◀️ จากฟอร์ม
-    Name: Name,               // ◀️ จากฟอร์ม
-    phone: phone,             // ◀️ จากฟอร์ม
-    role: 'TENANT'            // (ตั้งค่า default)
-  });
+    // 2. 🔻 (สำคัญ!) "อ่าน" Role ที่ Frontend ส่งมาด้วย
+    const { FName, LName, Name, phone, role } = req.body;
 
-  if (error) {
-    console.error('Error saving profile:', error);
-    return res.status(500).json({ message: error.message });
+    // (ป้องกัน Frontend ส่งค่ามั่ว)
+    const userRole = (role === 'OWNER') ? 'OWNER' : 'TENANT';
+
+    // 3. (INSERT ใหม่!) สร้างข้อมูลในตาราง "User"
+    const { data: newRow, error: insertError } = await supabase.from('User').insert({
+      authId: user.id,
+      email: user.email,
+      FName: FName,
+      LName: LName,
+      Name: Name,
+      phone: phone,
+      role: userRole // ◀️ ✅ ใช้ Role ที่ "อ่าน" มา
+    }).select().single(); // ◀️ (เพิ่ม!) ขอ "ข้อมูล" ที่เพิ่งสร้างกลับมาด้วย
+
+    if (insertError) {
+      console.error('Error saving profile:', insertError);
+      return res.status(500).json({ message: insertError.message });
+    }
+
+    // 4. "บันทึกสำเร็จ!" -> ส่ง "Profile ใหม่" กลับไปให้ React
+    return res.status(200).json({ message: 'Profile completed successfully', user: newRow });
+
+  } catch (err) {
+    console.error('Critical Error in handleCompleteProfileSubmit:', err.message);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
-
-  // 4. "บันทึกสำเร็จ!" -> ส่ง JSON กลับไปให้ React
-  return res.status(200).json({ message: 'Profile completed successfully' });
 };
 
 export const showDashboard = async (req, res) => {

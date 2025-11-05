@@ -12,7 +12,9 @@ import Invoices from "./pages/owner/Invoices";
 
 import DashboardTenant from "./pages/tenant/DashboardTenant";
 import Payments from "./pages/tenant/Payments";
+
 import InformTenant from "./pages/tenant/InformTenant";
+import InformOwner from "./pages/owner/InformOwner";
 
 export const router = createBrowserRouter([
   // Landing 
@@ -40,6 +42,7 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardOwner />, handle: { title: "หน้าแรก" } },
       { path: "dashboard", element: <DashboardOwner />, handle: { title: "หน้าแรก" } },
       { path: "invoices", element: <Invoices />, handle: { title: "สร้างใบแจ้งค่าห้อง" } },
+      { path: "inform", element: <InformOwner />, handle: { title: "ลงทะเบียนเจ้าของหอ" } },
     ],
   },
 
