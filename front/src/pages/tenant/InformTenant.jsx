@@ -2,11 +2,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiClient from "../../api/axios"; // ◀️ 1. Import "ยาม" (apiClient) เข้ามา
-import { useAuth } from "../../context/AuthContext";
 
 export default function InformTenant() {
   const navigate = useNavigate();
-  const { setUser } = useAuth();
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -27,19 +25,16 @@ export default function InformTenant() {
     setError(""); // เคลียร์ error เก่าก่อน
 
     try {
-      // 2. 🔻 (อัปเกรด!) 🔻
-      const response = await apiClient.post("/auth/complete-profile", {
-        FName: form.firstName,
-        LName: form.lastName,
-        Name: form.nickname,
+      // 4. 🔻 ยิง API ไปที่ Backend (ตาม Controller ที่เราแก้)
+      await apiClient.post("/auth/complete-profile", {
+        FName: form.firstName, // ◀️ แมปชื่อ
+        LName: form.lastName,  // ◀️ แมปนามสกุล
+        Name: form.nickname,   // ◀️ แมปชื่อเล่น
         phone: form.phone,
-        role: 'TENANT' // ◀️ (เพิ่ม!) บอก Backend ว่านี่คือ "TENANT"
       });
 
-      // 3. (เพิ่ม!) "อัปเดต" ความจำทันที
-      setUser(response.data.user); 
-      
-      console.log("สมัครผู้เช่าสำเร็จ:", form);
+      // 5. 🔻 ถ้าบันทึกสำเร็จ... ส่งไปหน้า Dashboard
+      console.log("ลงทะเบียน Google สำเร็จ, ข้อมูลถูกบันทึก!");
       navigate("/tenant/dashboard");
 
     } catch (err) {

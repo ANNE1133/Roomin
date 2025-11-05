@@ -12,9 +12,8 @@ import Invoices from "./pages/owner/Invoices";
 
 import DashboardTenant from "./pages/tenant/DashboardTenant";
 import Payments from "./pages/tenant/Payments";
-
 import InformTenant from "./pages/tenant/InformTenant";
-import InformOwner from "./pages/owner/InformOwner";
+import InformOwner from "./pages/owner/InformOwner"; // ◀️ (1. Import!)
 
 export const router = createBrowserRouter([
   // Landing 
@@ -37,7 +36,7 @@ export const router = createBrowserRouter([
   // Owner
   {
     path: "/owner",
-    element: <AppLayout variant="owner" />,
+    element: <AppLayout variant="owner" />, // ◀️ (Layout ที่ "ป้องกัน")
     children: [
       { index: true, element: <DashboardOwner />, handle: { title: "หน้าแรก" } },
       { path: "dashboard", element: <DashboardOwner />, handle: { title: "หน้าแรก" } },
@@ -49,12 +48,12 @@ export const router = createBrowserRouter([
   // Tenant
   {
     path: "/tenant",
-    element: <AppLayout variant="tenant" />,
+    element: <AppLayout variant="tenant" />, // ◀️ (Layout ที่ "ป้องกัน")
     children: [
       { index: true, element: <DashboardTenant />, handle: { title: "หน้าแรก" } },
       { path: "dashboard", element: <DashboardTenant />, handle: { title: "หน้าแรก" } },
       { path: "payments", element: <Payments />, handle: { title: "การชำระเงิน" } },
-      { path: "inform", element: <InformTenant />, handle: { title: "ลงทะเบียน" } },
+      { path: "inform", element: <InformTenant />, handle: { title: "ลงทะเบียนผู้เช่า" } },
     ],
   },
 

@@ -49,8 +49,6 @@ export default function LoginOwner() {
 
   // 5. 🔻 (เพิ่ม) ฟังก์ชัน Google (ที่ "ส่งสัญญาณ" Role)
   const handleGoogleLogin = () => {
-    // (นี่คือ "บั๊ก" ที่เราซ่อม!)
-    // เราส่ง ?role=OWNER เพื่อบอก Backend ว่า "นี่คือ Owner นะ"
     window.location.href = "http://localhost:3000/api/auth/login?role=OWNER";
   };
 

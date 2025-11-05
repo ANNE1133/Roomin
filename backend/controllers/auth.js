@@ -1,93 +1,98 @@
-// // controllers/userController.js
+// controllers/userController.js
 import supabase from '../config/supabaseClient.js'
 import { createServerClient } from '@supabase/ssr';
 import dotenv from 'dotenv';
 dotenv.config();
 
-// 🔹 Register (สมัครสมาชิก)
+// ======================================================================
+// 🔹 REGISTER (สมัครสมาชิก)
+// ======================================================================
 export const register = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' })
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // ใช้ Supabase Auth สมัครผู้ใช้
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-    })
+    });
 
     if (error) {
-      return res.status(400).json({ message: error.message })
+      return res.status(400).json({ message: error.message });
     }
 
     return res.status(201).json({
       message: 'User registered successfully',
       user: data.user,
-    })
+    });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Server Error' })
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
   }
-}
+};
 
-// 🔹 Login
+// ======================================================================
+// 🔹 LOGIN (Email/Password)
+// ======================================================================
 export const login = async (req, res) => {
   try {
-    const { email, password } = req.body
+    const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' })
+      return res.status(400).json({ message: 'Email and password are required' });
     }
 
-    // ใช้ Supabase Auth ล็อกอิน
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    })
+    });
 
     if (error) {
-      return res.status(401).json({ message: error.message })
+      return res.status(401).json({ message: error.message });
     }
 
     return res.status(200).json({
       message: 'Login successful',
       user: data.user,
       session: data.session,
-    })
+    });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Server Error' })
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
   }
-}
+};
 
-// 🔹 Get current user (ดึงข้อมูลผู้ใช้จาก token)
+// ======================================================================
+// 🔹 ดึงข้อมูลผู้ใช้จาก Token
+// ======================================================================
 export const user = async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(' ')[1] // Bearer token
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' })
+      return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    const { data, error } = await supabase.auth.getUser(token)
-
+    const { data, error } = await supabase.auth.getUser(token);
     if (error) {
-      return res.status(401).json({ message: error.message })
+      return res.status(401).json({ message: error.message });
     }
 
-    return res.status(200).json({ user: data.user })
+    return res.status(200).json({ user: data.user });
   } catch (err) {
-    console.error(err)
-    res.status(500).json({ message: 'Server Error' })
+    console.error(err);
+    res.status(500).json({ message: 'Server Error' });
   }
-}
+};
 
-// ฟังก์ชันนี้จะ "สร้าง" ล่าม Supabase ที่รู้จัก cookie
+// ======================================================================
+// 🔹 สร้าง Supabase Client ที่เชื่อมกับ cookie
+// ======================================================================
 const createSupabaseClient = (req, res) => {
   let headersSent = false;
-  res.on('finish', () => { headersSent = true }); // ตรวจจับว่า response ถูกส่งแล้ว
+  res.on('finish', () => { headersSent = true });
 
   return createServerClient(
     process.env.SUPABASE_URL,
@@ -96,7 +101,6 @@ const createSupabaseClient = (req, res) => {
       cookies: {
         get: (name) => req.cookies[name],
         set: (name, value, options) => {
-          // ✅ ป้องกันไม่ให้ set cookie หลัง response ถูกส่ง
           if (!headersSent && !res.headersSent) {
             res.cookie(name, value, options);
           }
@@ -111,240 +115,209 @@ const createSupabaseClient = (req, res) => {
   );
 };
 
-// 1. Controller สำหรับ "เริ่ม" ล็อกอิน
+// ======================================================================
+// 🔹 1. เริ่ม Login ด้วย Google (มี role ที่เลือก)
+// ======================================================================
 export const handleGoogleLogin = async (req, res) => {
   const supabase = createSupabaseClient(req, res);
   
+  // 1.1 "อ่าน" Role ที่ส่งมาจาก Frontend
+  const role = req.query.role || 'TENANT'; 
+
+  console.log(`🟦 [handleGoogleLogin] Setting auth_role cookie to: ${role}`);
+
+  // 1.2 🔻 (สำคัญ!) "ฝัง" Role ที่อ่านได้... ลงใน Cookie
+  // เราจะตั้งชื่อมันว่า 'auth_role' และให้มัน "ตาย" ใน 5 นาที
+  res.cookie('auth_role', role, { 
+    httpOnly: true, 
+    secure: process.env.NODE_ENV === 'production', 
+    maxAge: 5 * 60 * 1000 // 5 นาที
+  });
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
+      // 1.3 🔻 (สำคัญ!) "ลบ" options.data และ ?role=... ออกจาก URL นี้
       redirectTo: 'http://localhost:3000/api/auth/callback', 
     },
   });
 
   if (error) {
-    console.error('Error signing in with Google:', error);
+    console.error(' Error signing in with Google:', error);
     return res.status(500).send('Something went wrong');
   }
-
-  // ส่งผู้ใช้ไปหน้า Google
   return res.redirect(data.url);
 };
 
-// 2. Controller สำหรับ "รับ" ผู้ใช้กลับจาก Google
+// ======================================================================
+// 🔹 2. Callback หลังจาก Google Login
+// ======================================================================
 export const handleGoogleCallback = async (req, res) => {
-  const code = req.query.code; // Google จะส่ง code กลับมา
+  const code = req.query.code;
   const supabase = createSupabaseClient(req, res);
 
+  // 2.1 🔻 (สำคัญ!) "อ่าน" Role จาก "Cookie" ที่เรา "ฝัง" ไว้
+  // (ไม่ใช่จาก req.query.role หรือ user_metadata)
+  const role = req.cookies.auth_role || 'TENANT';
+
+  console.log(` [handleGoogleCallback] Received code, Role from Cookie: ${role}`);
+
+  // 2.2 🔻 (สำคัญ!) "เคลียร์" Cookie ทิ้ง (ไม่ให้มันค้าง)
+  res.clearCookie('auth_role', { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+
   if (code) {
-    const { error } = await supabase.auth.exchangeCodeForSession(String(code));
+    // 2.3 (เหมือนเดิม) "แลก" code ... 
+    const { data, error } = await supabase.auth.exchangeCodeForSession(String(code));
+    
     if (error) {
-      console.error('Error exchanging code for session:', error);
+      console.error(' Error exchanging code for session:', error);
       return res.status(500).send('Something went wrong');
     }
   }
 
-  // พอล็อกอินเสร็จ... ส่งไปหน้า dashboard (หรือหน้าหลัก)
-  setTimeout(() => {
-    res.redirect('/api/auth/check-profile');
-  }, 0);
+  // 2.4 🔻 (สำคัญ!) "ส่งต่อ" Role ที่ "ถูกต้อง" (จาก Cookie) ไปให้ checkProfile
+  res.redirect(`/api/auth/check-profile?role=${role}`);
 };
 
+// ======================================================================
+// 🔹 3. ตรวจสอบว่าผู้ใช้มี Profile แล้วหรือยัง
+// ======================================================================
 export const checkProfile = async (req, res) => {
   const supabase = createSupabaseClient(req, res);
-  
-  // 1. หาว่า "ฉันคือใคร" (จากคุกกี้)
-  const { data: { user }, error: authError } = await supabase.auth.getUser();
-  if (authError || !user) {
-  return res.status(401).json({ message: 'Unauthorized' });
-}
-
-  const { data, error } = await supabase.from('User')
-                                     .select('role')
-                                     .eq('authId', user.id) // user.id คือ "authId"
-                                     .maybeSingle();
-                                    
+  const roleFromQuery = req.query.role || 'TENANT';
   const frontendUrl = 'http://localhost:5173';
 
-  if (data) { 
-  // 3. "ตัดสินใจ" จาก data ที่ "ดึง" มาได้
-  if (data.role === 'OWNER') {
-    return res.redirect(`${frontendUrl}/owner/dashboard`);
-  } else {
-    return res.redirect(`${frontendUrl}/tenant/dashboard`);
-  }
+  console.log(`[checkProfile] role from query: ${roleFromQuery}`);
 
-} else {
-  // (ไม่เจอ = User ใหม่)
-  return res.redirect(`${frontendUrl}/tenant/inform`); 
-}
-};
-
-export const getMyProfile = async (req, res) => {
-  const supabase = createSupabaseClient(req, res);
-  
-  // 1. เช็ก Auth (จากคุกกี้)
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {
-    // 401 (ยังไม่ล็อกอิน) - นี่ "ไม่ใช่" Error, นี่คือ "สถานะ"
     return res.status(401).json({ message: 'Unauthorized' });
   }
 
-  // 2. ถ้า Auth ผ่าน, ไปหา Profile (จากตาราง 'User')
-  // (เราต้องเช็ก RLS SELECT ของคุณอีกครั้ง... แต่คราวนี้เราจะ select *)
-  const { data: profile, error: profileError } = await supabase.from('User')
-                                             .select('*') // ◀️ ดึงมาทั้งแถว
-                                             .eq('authId', user.id)
-                                             .single(); // (เราแก้ซ้ำแล้ว, .single() ปลอดภัย)
-  
+  const { data, error } = await supabase
+    .from('User')
+    .select('role')
+    .eq('authId', user.id)
+    .maybeSingle();
+
+  if (error) {
+    console.error('DB error in checkProfile:', error);
+    return res.status(500).json({ message: 'Database Error' });
+  }
+
+  if (data) {
+    // มี profile แล้ว -> ไปหน้า dashboard ตาม role จริง
+    if (data.role === 'OWNER') {
+      console.log(`➡️ Redirect to OWNER dashboard`);
+      return res.redirect(`${frontendUrl}/owner/dashboard`);
+    } else {
+      console.log(`➡️ Redirect to TENANT dashboard`);
+      return res.redirect(`${frontendUrl}/tenant/dashboard`);
+    }
+  } else {
+    // ยังไม่มี profile -> ไปหน้า inform ตาม role ที่เลือกตอน login
+    if (roleFromQuery === 'OWNER') {
+      console.log(`➡️ Redirect to OWNER inform`);
+      return res.redirect(`${frontendUrl}/owner/inform`);
+    } else {
+      console.log(`➡️ Redirect to TENANT inform`);
+      return res.redirect(`${frontendUrl}/tenant/inform`);
+    }
+  }
+};
+
+// ======================================================================
+// 🔹 4. ดึงข้อมูลโปรไฟล์ของผู้ใช้ปัจจุบัน
+// ======================================================================
+export const getMyProfile = async (req, res) => {
+  const supabase = createSupabaseClient(req, res);
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+
+  const { data: profile, error: profileError } = await supabase
+    .from('User')
+    .select('*')
+    .eq('authId', user.id)
+    .maybeSingle();
+
   if (profileError) {
-    // ถ้า RLS ของ SELECT * ยังไม่ได้เปิด... มันจะพังตรงนี้
     console.error('Error fetching profile for /me:', profileError);
     return res.status(500).json({ message: "Error fetching profile: " + profileError.message });
   }
 
   if (!profile) {
-    // มี Auth, แต่ไม่มี Profile (เคสที่ต้องไป /inform)
     return res.status(404).json({ message: 'Profile not found', needsProfile: true });
   }
 
-  // 3. สำเร็จ! ส่งข้อมูล "Profile" กลับไปให้ React
   return res.status(200).json({ user: profile });
 };
 
+// ======================================================================
+// 🔹 5. แสดงฟอร์มกรอกโปรไฟล์
+// ======================================================================
 export const showCompleteProfileForm = (req, res) => {
-  // ไปหาไฟล์ 'views/complete-profile.ejs' มาโชว์
   res.render('complete-profile');
 };
 
-// 6. (Controller ใหม่!) "รับ" ข้อมูลจากฟอร์ม (POST)
-// 6. (Controller อัปเกรด!) "รับ" ข้อมูลจากฟอร์ม (POST)
+// ======================================================================
+// 🔹 6. บันทึกข้อมูลโปรไฟล์ (หลังกรอก inform)
+// ======================================================================
 export const handleCompleteProfileSubmit = async (req, res) => {
   const supabase = createSupabaseClient(req, res);
-  
+
   try {
-    // 1. หาว่า "ฉันคือใคร" (จากคุกกี้)
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return res.status(401).json({ message: 'Unauthorized' });
     }
 
-    // 2. 🔻 (สำคัญ!) "อ่าน" Role ที่ Frontend ส่งมาด้วย
     const { FName, LName, Name, phone, role } = req.body;
-
-    // (ป้องกัน Frontend ส่งค่ามั่ว)
     const userRole = (role === 'OWNER') ? 'OWNER' : 'TENANT';
 
-    // 3. (INSERT ใหม่!) สร้างข้อมูลในตาราง "User"
     const { data: newRow, error: insertError } = await supabase.from('User').insert({
       authId: user.id,
       email: user.email,
-      FName: FName,
-      LName: LName,
-      Name: Name,
-      phone: phone,
-      role: userRole // ◀️ ✅ ใช้ Role ที่ "อ่าน" มา
-    }).select().single(); // ◀️ (เพิ่ม!) ขอ "ข้อมูล" ที่เพิ่งสร้างกลับมาด้วย
+      FName,
+      LName,
+      Name,
+      phone,
+      role: userRole
+    }).select().single();
 
     if (insertError) {
       console.error('Error saving profile:', insertError);
       return res.status(500).json({ message: insertError.message });
     }
 
-    // 4. "บันทึกสำเร็จ!" -> ส่ง "Profile ใหม่" กลับไปให้ React
     return res.status(200).json({ message: 'Profile completed successfully', user: newRow });
-
   } catch (err) {
     console.error('Critical Error in handleCompleteProfileSubmit:', err.message);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
 };
 
+// ======================================================================
+// 🔹 7. Dashboard
+// ======================================================================
 export const showDashboard = async (req, res) => {
   const supabase = createSupabaseClient(req, res);
-
-  // "เช็ก" (อีกครั้ง) ว่าล็อกอินมารึเปล่า
   const { data: { user }, error: authError } = await supabase.auth.getUser();
 
   if (authError || !user) {
-  return res.status(401).json({ message: 'Unauthorized' }); 
-}
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
 
-  // ถ้า "ใช่" -> "ฉาย" หนังเรื่อง 'dashboard'
-  res.render('dashboard'); 
+  res.render('dashboard');
 };
 
-// 3. Controller สำหรับ Logout
+// ======================================================================
+// 🔹 8. Logout
+// ======================================================================
 export const handleLogout = async (req, res) => {
   const supabase = createSupabaseClient(req, res);
   await supabase.auth.signOut();
-  // บอกว่า "ออกจากระบบสำเร็จแล้ว"
-  return res.status(200).json({ message: 'Logged out successfully' }); 
+  return res.status(200).json({ message: 'Logged out successfully' });
 };
-// controllers/userController.js
-// verลองทำเอง ยังไม่ได้
-// import supabase from "../config/supabaseClient.js";
-
-// // 🔹 สร้าง Supabase server client สำหรับ SSR / cookie
-// const createSupabaseClient = (req, res) => {
-//   return supabase; // สำหรับง่าย ๆ ใช้ Supabase client เดิม
-// };
-
-// // 🔹 Email/Password Login
-// export const login = async (req, res) => {
-//   const { email, password } = req.body;
-//   if (!email || !password) return res.status(400).json({ message: "กรอก email/password" });
-
-//   const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-//   if (error) return res.status(401).json({ message: error.message });
-
-//   res.status(200).json({ user: data.user, session: data.session });
-// };
-
-// // 🔹 Google Login start
-// export const handleGoogleLogin = async (req, res) => {
-//   const { data } = await supabase.auth.signInWithOAuth({
-//     provider: "google",
-//     options: { redirectTo: "http://localhost:3000/auth/callback" },
-//   });
-//   res.json({ url: data.url });
-// };
-
-// // 🔹 Google callback → เช็ก profile
-// export const checkProfile = async (req, res) => {
-//   const token = req.headers.authorization?.split(" ")[1];
-//   if (!token) return res.status(401).json({ redirect: "/login" });
-
-//   const { data: { user }, error } = await supabase.auth.getUser(token);
-//   if (error || !user) return res.status(401).json({ redirect: "/login" });
-
-//   // ตรวจสอบว่ามี profile ใน DB หรือยัง
-//   const { data: profile } = await supabase.from("User").select("UserID").eq("authId", user.id).single();
-
-//   if (profile) res.json({ redirect: "/dashboard" });
-//   else res.json({ redirect: "/complete-profile" });
-// };
-
-// // 🔹 รับข้อมูล Complete Profile
-// export const handleCompleteProfileSubmit = async (req, res) => {
-//   const token = req.headers.authorization?.split(" ")[1];
-//   if (!token) return res.status(401).json({ redirect: "/login" });
-
-//   const { data: { user } } = await supabase.auth.getUser(token);
-//   if (!user) return res.status(401).json({ redirect: "/login" });
-
-//   const { FName, LName, Name, phone } = req.body;
-//   const { error } = await supabase.from("User").insert({
-//     authId: user.id,
-//     email: user.email,
-//     FName,
-//     LName,
-//     Name,
-//     phone,
-//     role: "TENANT",
-//   });
-
-//   if (error) return res.status(500).json({ message: error.message });
-//   res.json({ redirect: "/dashboard" });
-// };
-
