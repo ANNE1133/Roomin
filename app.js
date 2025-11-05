@@ -18,7 +18,7 @@ const app = express();
 // Middleware
 // app.use(morgan('dev'));
 // app.use(express.json());
-app.use(cors());
+// app.use(cors());
 app.use(morgan('dev'));                          // log request
 app.use(cors({ origin: '*' }));                  // เปิด CORS (ปรับ origin ตามต้องการ)
 app.use(express.json());                          // แปลง JSON body
@@ -31,9 +31,9 @@ app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 // app.set('views', path.join(__dirname, 'views'));
 // app.use(express.static(path.join(__dirname, 'public')));
 
-// 🔹 โหลด router auth แยกเฉพาะ
-import authRouter from './backend/routers/auth.js';
-app.use('/auth', authRouter);
+// // 🔹 โหลด router auth แยกเฉพาะ
+// import authRouter from './routers/auth.js';
+// app.use('/api/auth', authRouter);
 
 // โหลด routes ทั้งหมดจาก ./backend/routers
 const routerFiles = readdirSync('./backend/routers');
