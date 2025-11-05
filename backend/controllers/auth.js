@@ -160,18 +160,24 @@ export const checkProfile = async (req, res) => {
 }
 
   const { data, error } = await supabase.from('User')
-                                     .select('UserID')
+                                     .select('role')
                                      .eq('authId', user.id) // user.id คือ "authId"
                                      .maybeSingle();
                                     
   const frontendUrl = 'http://localhost:5173';
 
-  if (data) {
-    return res.redirect(`${frontendUrl}/tenant/dashboard`);
+  if (data) { 
+  // 3. "ตัดสินใจ" จาก data ที่ "ดึง" มาได้
+  if (data.role === 'OWNER') {
+    return res.redirect(`${frontendUrl}/owner/dashboard`);
   } else {
+    return res.redirect(`${frontendUrl}/tenant/dashboard`);
+  }
 
-    return res.redirect(`${frontendUrl}/tenant/inform`); 
-  }
+} else {
+  // (ไม่เจอ = User ใหม่)
+  return res.redirect(`${frontendUrl}/tenant/inform`); 
+}
 };
 
 export const getMyProfile = async (req, res) => {
