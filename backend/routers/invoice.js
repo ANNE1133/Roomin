@@ -1,39 +1,32 @@
+// routes/invoiceRoutes.js
+import express from 'express';
+import {
+  getAllInvoices,
+  getUnpaidInvoices,
+  getInvoiceById,
+  createInvoice,
+  updateInvoiceStatus,
+  deleteInvoice
+} from '../controllers/invoice.js';
 
-// ============================================
-// 4. invoice.routes.js - จัดการใบแจ้งหนี้
-// ============================================
+const router = express.Router();
 
-import { Router } from 'express';
-const router = Router();
+// GET /api/invoices - ดึงใบแจ้งหนี้ทั้งหมด (รองรับ ?roomId=1&dormitoryId=1&month=1&year=2024)
+router.get('/invoices', getAllInvoices);
 
-// ดูใบแจ้งหนี้ทั้งหมด
-router.get('/', async (c) => {
-  return c.json({ message: 'Get all invoices' })
-})
+// GET /api/invoices/unpaid - ดึงใบแจ้งหนี้ที่ยังไม่ชำระ (รองรับ ?dormitoryId=1)
+router.get('/invoices/unpaid', getUnpaidInvoices);
 
-// ดูใบแจ้งหนี้ของตัวเอง
-router.get('/my/invoices', async (c) => {
-  return c.json({ message: 'Get my invoices' })
-})
+// GET /api/invoices/:id - ดึงใบแจ้งหนี้ตาม ID
+router.get('/invoices/:id', getInvoiceById);
 
-// ดูใบแจ้งหนี้ตาม ID
-router.get('/:id', async (c) => {
-  return c.json({ message: 'Get invoice by ID' })
-})
+// POST /api/invoices - สร้างใบแจ้งหนี้ใหม่
+router.post('/invoices', createInvoice);
 
-// สร้างใบแจ้งหนี้ใหม่
-router.post('/', async (c) => {
-  return c.json({ message: 'Create invoice' })
-})
+// PATCH /api/invoices/:id/status - อัพเดทสถานะใบแจ้งหนี้
+router.patch('/invoices/:id/status', updateInvoiceStatus);
 
-// แก้ไขใบแจ้งหนี้
-router.put('/:id', async (c) => {
-  return c.json({ message: 'Update invoice' })
-})
+// DELETE /api/invoices/:id - ลบใบแจ้งหนี้
+router.delete('/invoices/:id', deleteInvoice);
 
-// ดาวน์โหลด PDF
-router.get('/:id/pdf', async (c) => {
-  return c.json({ message: 'Download PDF' })
-})
-
-export default router
+export default router;

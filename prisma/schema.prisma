@@ -1,30 +1,28 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["public"]
 }
 
-model Building {
-  BuildingID   Int       @id @default(autoincrement())
-  BuildingName String
-  dormitoryId  Int
-  Dormitory    Dormitory @relation(fields: [dormitoryId], references: [Dormitoryid])
-  Room         Room[]
-}
+model User {
+  UserID   Int     @id @default(autoincrement())
+  authId   String  @unique
+  FName     String
+  LName     String
+  Name      String
+  email    String
+  phone    String?
+  role     Role    @default(TENANT)
+  contracts  Contract[]
+  roommates  Roommate[]
+  invoices   Invoice[]  
 
-model Contract {
-  ContractID Int      @id @default(autoincrement())
-  Code       String
-  DayStart   DateTime
-  DayEnd     DateTime
-  roomId     Int
-  userId     Int
-  Room       Room     @relation(fields: [roomId], references: [RoomID])
-  User       User     @relation(fields: [userId], references: [UserID])
+  @@schema("public")
 }
 
 model Dormitory {
@@ -33,47 +31,19 @@ model Dormitory {
   address       String?
   phone         String?
   ownerAuthId   String?
-  Building      Building[]
+  buildings     Building[]
+
+  @@schema("public")
 }
 
-model Invoice {
-  InvoiceID Int        @id @default(autoincrement())
-  Date      DateTime
-  roomId    Int
-  statusId  Int
-  userId    Int
-  Room      Room       @relation(fields: [roomId], references: [RoomID])
-  Status    Status     @relation(fields: [statusId], references: [StatusID])
-  User      User       @relation(fields: [userId], references: [UserID])
-  ItemList  ItemList[]
-  Receipt   Receipt[]
-}
+model Building {
+  BuildingID   Int       @id @default(autoincrement())
+  BuildingName String
+  dormitoryId  Int
+  dormitory    Dormitory @relation(fields: [dormitoryId], references: [Dormitoryid])
+  rooms        Room[]
 
-model Item {
-  ItemID   Int        @id @default(autoincrement())
-  name     String
-  price    Float
-  statusId Int
-  Status   Status     @relation(fields: [statusId], references: [StatusID])
-  ItemList ItemList[]
-}
-
-model ItemList {
-  ItemListID Int     @id @default(autoincrement())
-  invoiceId  Int
-  itemId     Int
-  quantity   Int
-  Invoice    Invoice @relation(fields: [invoiceId], references: [InvoiceID])
-  Item       Item    @relation(fields: [itemId], references: [ItemID])
-}
-
-model Receipt {
-  ReceiptID Int      @id @default(autoincrement())
-  amount    Float
-  date      DateTime
-  proof     String?
-  invoiceId Int
-  Invoice   Invoice  @relation(fields: [invoiceId], references: [InvoiceID])
+  @@schema("public")
 }
 
 model Room {
@@ -81,10 +51,23 @@ model Room {
   price      Float
   statusId   Int
   buildingId Int
-  Contract   Contract[]
-  Invoice    Invoice[]
-  Building   Building   @relation(fields: [buildingId], references: [BuildingID])
-  Status     Status     @relation(fields: [statusId], references: [StatusID])
+  contracts  Contract[]
+  invoices   Invoice[]
+  building   Building   @relation(fields: [buildingId], references: [BuildingID])
+  status     Status     @relation(fields: [statusId], references: [StatusID])
+
+  @@schema("public")
+}
+
+model Status {
+  StatusID Int       @id @default(autoincrement())
+  Type     String
+  name     String
+  invoices Invoice[]
+  items    Item[]
+  rooms    Room[]
+
+  @@schema("public")
 }
 
 model Roommate {
@@ -95,33 +78,75 @@ model Roommate {
   Gmail      String
   Tel        String
   userId     Int
-  User       User   @relation(fields: [userId], references: [UserID])
+  user       User   @relation(fields: [userId], references: [UserID])
+  
+  @@schema("public")
 }
 
-model Status {
-  StatusID Int       @id @default(autoincrement())
-  Type     String
-  name     String
-  Invoice  Invoice[]
-  Item     Item[]
-  Room     Room[]
+model Contract {
+  ContractID Int      @id @default(autoincrement())
+  Code       String
+  DayStart   DateTime
+  DayEnd     DateTime
+  roomId     Int
+  userId     Int
+  room       Room    @relation(fields: [roomId], references: [RoomID])
+  user       User    @relation(fields: [userId], references: [UserID])
+  
+  @@schema("public")
 }
 
-model User {
-  UserID   Int        @id @default(autoincrement())
-  authId   String     @unique
-  email    String
-  phone    String?
-  role     Role       @default(TENANT)
-  FName    String
-  LName    String
-  Name     String
-  Contract Contract[]
-  Invoice  Invoice[]
-  Roommate Roommate[]
+model Invoice {
+  InvoiceID Int        @id @default(autoincrement())
+  Date      DateTime
+  roomId    Int
+  userId    Int
+  statusId  Int
+  room      Room       @relation(fields: [roomId], references: [RoomID])
+  user      User       @relation(fields: [userId], references: [UserID])
+  status    Status     @relation(fields: [statusId], references: [StatusID])
+  itemlists ItemList[]
+  receipts  Receipt[]
+
+  @@schema("public")
+}
+
+model ItemList {
+  ItemListID Int     @id @default(autoincrement())
+  invoiceId  Int
+  itemId     Int
+  quantity   Int
+  invoice    Invoice @relation(fields: [invoiceId], references: [InvoiceID])
+  item       Item    @relation(fields: [itemId], references: [ItemID])
+
+  @@schema("public")
+}
+
+model Item {
+  ItemID    Int        @id @default(autoincrement())
+  name      String
+  price     Float
+  statusId  Int
+  status    Status     @relation(fields: [statusId], references: [StatusID])
+  itemlists ItemList[]
+
+  @@schema("public")
+}
+
+model Receipt {
+  ReceiptID Int      @id @default(autoincrement())
+  amount    Float
+  date      DateTime
+  proof     String?
+  invoiceId Int
+  invoice   Invoice  @relation(fields: [invoiceId], references: [InvoiceID])
+
+  @@schema("public")
 }
 
 enum Role {
   TENANT
   OWNER
+
+  @@schema("public")
 }

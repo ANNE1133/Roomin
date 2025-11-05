@@ -10,11 +10,11 @@ import {
 
 const router = express.Router();
 
-router.get('/', getAllRooms);
-router.get('/available', getAvailableRooms);
-router.get('/:id', getRoomById);
-router.post('/createroom', createRoom);
-router.put('/:id', updateRoom);
-router.delete('/:id', deleteRoom);
+router.get('/rooms', getAllRooms);
+router.get('/rooms/filter', getAvailableRooms);
+router.get('/room/:id', getRoomById);
+router.post('/room/createroom', createRoom);
+router.put('/room/:id', updateRoom);
+router.delete('/room/:id', deleteRoom);
 
 export default router;

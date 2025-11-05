@@ -1,15 +1,3 @@
-// const express = require('express');
-// const router = express.Router();
-
-// const { register, login, user } = require('../controllers/auth');
-
-// router.post('/register',register)
-// router.post('/login',login)
-// router.post('/user',user)
-// router.post('/admin',user)
-
-// module.exports = router
-
 import express from 'express';
 import {
   register,
@@ -20,21 +8,20 @@ import {
   checkProfile,
   showCompleteProfileForm,
   handleCompleteProfileSubmit,
-  handleLogout
+  handleLogout,
+  getMyProfile
 } from '../controllers/auth.js';
 
 
 const router = express.Router();
 
-router.get('/show-login', (req, res) => {
-  res.render('login'); 
-});
 //google login
 router.get('/login', handleGoogleLogin);
 router.get('/callback', handleGoogleCallback);
 router.post('/logout', handleLogout);
+router.get('/me', getMyProfile);
 
-router.post('/register',register)
+router.post('/user/register',register)
 router.post('/login',login)
 // router.post('/user',user)
 // router.post('/admin',user)
@@ -47,4 +34,27 @@ router.get('/dashboard', showDashboard);
 router.post('/logout', handleLogout);
 
 
+
+
+
+
+
+
+// verลองทำเอง ยังไม่ได้
+// import express from "express";
+// import {
+//   login,
+//   handleGoogleLogin,
+//   checkProfile,
+//   handleCompleteProfileSubmit,
+// } from "../controllers/auth.js";
+
+// // const router = express.Router();
+
+// router.post("/login", login);
+// router.get("/google-login", handleGoogleLogin);
+// router.get("/check-profile", checkProfile);
+// router.post("/complete-profile", handleCompleteProfileSubmit);
+
 export default router;
+

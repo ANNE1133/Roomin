@@ -1,25 +1,21 @@
 // routes/users.js
 import express from 'express';
 import {
-  addUser,
-  fetchUsers,
-  fetchUserById,
-  fetchUserByEmail,
-  modifyUser,
-  removeUser,
-  findUsers,
+  getAllUsers,
+  getUserByAuthId,
+  getUserById,
+  updateUser,
+  deleteUser,
+  createUser,
 } from "../controllers/users.js";
 
-// const express = require('express');
 const router = express.Router();
 
-router.post("/users", addUser);
-router.get("/users", fetchUsers);
-router.get("/users/search", findUsers);
-router.get("/users/:id", fetchUserById);
-router.put("/users/:id", modifyUser);
-router.delete("/users/:id", removeUser);
-
-router.get("/users/email/:email", fetchUserByEmail);
+router.post("/users", createUser);
+router.get("/users/:authId", getUserByAuthId);
+router.get("/users/search", getAllUsers);
+router.get("/users/:id", getUserById);
+router.put("/users/:id", updateUser);
+router.delete("/users/:id", deleteUser);
 
 export default router;
