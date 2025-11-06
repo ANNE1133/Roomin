@@ -256,98 +256,183 @@ export const getInvoiceById = async (req, res) => {
   }
 };
 
+
+// POST create invoice
+// สร้างใบแจ้งหนี้ใหม่ พร้อมรายการค่าใช้จ่าย
 // POST create invoice
 // สร้างใบแจ้งหนี้ใหม่ พร้อมรายการค่าใช้จ่าย
 export const createInvoice = async (req, res) => {
   try {
-    const { Date: invoiceDate, roomId, statusId, userId } = req.body;
-    // items = [{ itemId: 1, quantity: 1 }, { itemId: 2, quantity: 50 }, ...]
-    
-    // Validation
-    if (!invoiceDate || !roomId || !statusId || !userId ) {
-      return res.status(400).json({ 
-        error: 'Invoice date, room ID, status ID, and user ID are required'
+    const { Date: invoiceDate, roomId, statusId, userId, items } = req.body;
+
+    const missingFields = [];
+
+    if (!invoiceDate) missingFields.push("Invoice date");
+    if (!roomId) missingFields.push("Room ID");
+    if (!statusId) missingFields.push("Status ID");
+    if (!userId) missingFields.push("User ID");
+    if (!items || !Array.isArray(items) || items.length === 0) missingFields.push("Items");
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        error: `Missing required field(s): ${missingFields.join(", ")}`
       });
     }
-    
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ 
+        error: 'Items must be a non-empty array'
+      });
+    }
+
     // ตรวจสอบว่าห้องมีอยู่จริง
     const room = await prisma.room.findUnique({
       where: { RoomID: parseInt(roomId) }
     });
-    
-    if (!room) {
-      return res.status(404).json({ error: 'Room not found' });
-    }
-    
+    if (!room) return res.status(404).json({ error: 'Room not found' });
+
     // ตรวจสอบว่าเป็น INVOICE status
     const status = await prisma.status.findFirst({
-      where: { 
-        StatusID: parseInt(statusId),
-        Type: 'INVOICE'
-      }
+      where: { StatusID: parseInt(statusId), Type: 'INVOICE' }
     });
-    
-    if (!status) {
-      return res.status(404).json({ error: 'Invoice status not found' });
-    }
-        // ตรวจสอบ user
+    if (!status) return res.status(404).json({ error: 'Invoice status not found' });
+
+    // ตรวจสอบ user
     const user = await prisma.user.findUnique({
       where: { UserID: parseInt(userId) }
     });
     if (!user) return res.status(404).json({ error: 'User not found' });
-    
-    // if (existingItems.length !== itemIds.length) {
-    //   return res.status(404).json({ error: 'One or more items not found' });
-    // }
-    
-    // สร้างใบแจ้งหนี้และรายการพร้อมกัน (Transaction)
-    // const invoice = await prisma.$transaction(async (tx) => {
-      // สร้างใบแจ้งหนี้
-      const invoice = await prisma.invoice.create({
-        data: {
-          Date: new Date(invoiceDate),
-          roomId: parseInt(roomId),
-          userId: parseInt(userId),
-          statusId: parseInt(statusId),
-        },
-        include: {
-          user: true,
-          room: {
-            include: {
-              building: {
-                include: {
-                  dormitory: true,
-                },
-              },
-            },
-          },
-          status: true,
-          itemlists: {
-            include: { item: true },
-          },
-        },
-      });
-    // });
-    
+
+    // สร้าง invoice พร้อม itemlists
+    const invoice = await prisma.invoice.create({
+      data: {
+        Date: new Date(invoiceDate),
+        roomId: parseInt(roomId),
+        userId: parseInt(userId),
+        statusId: parseInt(statusId),
+        itemlists: {
+          create: items.map(i => ({
+            itemId: parseInt(i.itemId),
+            quantity: parseFloat(i.quantity)
+          }))
+        }
+      },
+      include: {
+        user: true,
+        room: { include: { building: { include: { dormitory: true } } } },
+        status: true,
+        itemlists: { include: { item: true } }
+      }
+    });
+
     // คำนวณยอดรวม
-    const total =
-      invoice.itemlists && invoice.itemlists.length > 0
-        ? invoice.itemlists.reduce(
-            (sum, itemlist) => sum + itemlist.quantity * itemlist.item.price,
-            0
-          )
-        : 0;
-    
+    const total = invoice.itemlists.reduce(
+      (sum, itemlist) => sum + itemlist.quantity * itemlist.item.price,
+      0
+    );
+
     res.status(201).json({
       ...invoice,
       total
     });
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: error.message });
   }
 };
 
+// export const createInvoice = async (req, res) => {
+//   try {
+//     const { Date: invoiceDate, roomId, statusId, userId } = req.body;
+//     // items = [{ itemId: 1, quantity: 1 }, { itemId: 2, quantity: 50 }, ...]
+    
+//     // Validation
+//     if (!invoiceDate || !roomId || !statusId || !userId ) {
+//       return res.status(400).json({ 
+//         error: 'Invoice date, room ID, status ID, and user ID are required'
+//       });
+//     }
+    
+//     // ตรวจสอบว่าห้องมีอยู่จริง
+//     const room = await prisma.room.findUnique({
+//       where: { RoomID: parseInt(roomId) }
+//     });
+    
+//     if (!room) {
+//       return res.status(404).json({ error: 'Room not found' });
+//     }
+    
+//     // ตรวจสอบว่าเป็น INVOICE status
+//     const status = await prisma.status.findFirst({
+//       where: { 
+//         StatusID: parseInt(statusId),
+//         Type: 'INVOICE'
+//       }
+//     });
+    
+//     if (!status) {
+//       return res.status(404).json({ error: 'Invoice status not found' });
+//     }
+//         // ตรวจสอบ user
+//     const user = await prisma.user.findUnique({
+//       where: { UserID: parseInt(userId) }
+//     });
+//     if (!user) return res.status(404).json({ error: 'User not found' });
+    
+//     // if (existingItems.length !== itemIds.length) {
+//     //   return res.status(404).json({ error: 'One or more items not found' });
+//     // }
+    
+//     // สร้างใบแจ้งหนี้และรายการพร้อมกัน (Transaction)
+//     // const invoice = await prisma.$transaction(async (tx) => {
+//       // สร้างใบแจ้งหนี้
+//       const invoice = await prisma.invoice.create({
+//         data: {
+//           Date: new Date(invoiceDate),
+//           roomId: parseInt(roomId),
+//           userId: parseInt(userId),
+//           statusId: parseInt(statusId),
+//         },
+//         include: {
+//           user: true,
+//           room: {
+//             include: {
+//               building: {
+//                 include: {
+//                   dormitory: true,
+//                 },
+//               },
+//             },
+//           },
+//           status: true,
+//           itemlists: {
+//             include: { item: true },
+//           },
+//         },
+//       });
+//     // });
+    
+//     // คำนวณยอดรวม
+//     const total =
+//       invoice.itemlists && invoice.itemlists.length > 0
+//         ? invoice.itemlists.reduce(
+//             (sum, itemlist) => sum + itemlist.quantity * itemlist.item.price,
+//             0
+//           )
+//         : 0;
+    
+//     res.status(201).json({
+//       ...invoice,
+//       total
+//     });
+//   } catch (error) {
+//     res.status(500).json({ error: error.message });
+//   }
+// };
+
 // PUT update invoice status
+
 // อัพเดทสถานะใบแจ้งหนี้ (เช่น จาก "รอชำระ" เป็น "ชำระแล้ว")
 export const updateInvoiceStatus = async (req, res) => {
   try {
@@ -432,6 +517,66 @@ export const deleteInvoice = async (req, res) => {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Invoice not found' });
     }
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET all invoices for logged-in user
+export const getInvoicesForUser = async (req, res) => {
+  try {
+    const { authId } = req.params;
+
+    // หาผู้ใช้จาก authId
+    const user = await prisma.user.findUnique({
+      where: { authId }
+    });
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    // ดึง invoice ของ user
+    const invoices = await prisma.invoice.findMany({
+      where: {
+        room: {
+          contracts: {
+            some: {
+              userId: user.UserID, // ✅ ใช้ userId
+              DayEnd: { gte: new Date() }
+            }
+          }
+        }
+      },
+      include: {
+        room: {
+          include: {
+            building: { include: { dormitory: true } },
+            contracts: { include: { user: true } }
+          }
+        },
+        status: true,
+        itemlists: { include: { item: true } },
+        receipts: { orderBy: { date: 'desc' } }
+      },
+      orderBy: { InvoiceID: 'desc' }
+    });
+
+    // const result = invoices.map(inv => {
+    //   const total = inv.itemlists.reduce((sum, itemlist) => sum + (itemlist.quantity * itemlist.item.price), 0);
+    //   const paid = inv.receipts.reduce((sum, receipt) => sum + receipt.amount, 0);
+    //   return { ...inv, total, paid, remaining: total - paid };
+    // });
+    const result = invoices.map(inv => {
+      const itemsTotal = inv.itemlists.reduce(
+        (sum, itemlist) => sum + itemlist.quantity * itemlist.item.price,
+        0
+      );
+      const roomPrice = inv.room?.price || 0; // ดึงค่าเช่าห้อง, ถ้าไม่มีให้เป็น 0
+      const total = itemsTotal + roomPrice; // รวมค่าเช่าห้องด้วย
+      const paid = inv.receipts.reduce((sum, receipt) => sum + receipt.amount, 0);
+      return { ...inv, total, paid, remaining: total - paid };
+    });
+
+    res.json(result);
+  } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };

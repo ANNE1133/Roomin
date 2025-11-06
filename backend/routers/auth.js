@@ -1,54 +1,36 @@
-// import express from 'express';
-// import {
-//   register,
-//   login,
-//   showDashboard,
-//   handleGoogleLogin,
-//   handleGoogleCallback,
-//   checkProfile,
-//   showCompleteProfileForm,
-//   handleCompleteProfileSubmit,
-//   handleLogout
-// } from '../controllers/auth.js';
-
-
-// const router = express.Router();
-
-// router.get('/show-login', (req, res) => {
-//   res.render('login'); 
-// });
-// //google login
-// router.get('/login', handleGoogleLogin);
-// router.get('/callback', handleGoogleCallback);
-// router.post('/logout', handleLogout);
-
-// router.post('user/register',register)
-// router.post('/login',login)
-// // router.post('/user',user)
-// // router.post('/admin',user)
-
-// //complete profile
-// router.get('/check-profile', checkProfile);
-// router.get('/complete-profile', showCompleteProfileForm);
-// router.post('/complete-profile', handleCompleteProfileSubmit);
-// router.get('/dashboard', showDashboard);
-// router.post('/logout', handleLogout);
-
-// verลองทำเอง ยังไม่ได้
-import express from "express";
+import express from 'express';
 import {
+  register,
   login,
+  showDashboard,
   handleGoogleLogin,
+  handleGoogleCallback,
   checkProfile,
+  showCompleteProfileForm,
   handleCompleteProfileSubmit,
-} from "../controllers/auth.js";
+  handleLogout,
+  getMyProfile
+} from '../controllers/auth.js';
+
 
 const router = express.Router();
 
-router.post("/login", login);
-router.get("/google-login", handleGoogleLogin);
-router.get("/check-profile", checkProfile);
-router.post("/complete-profile", handleCompleteProfileSubmit);
+//google login
+router.get('/auth/login', handleGoogleLogin);
+router.get('/auth/callback', handleGoogleCallback);
+router.post('/auth/logout', handleLogout);
+router.get('/auth/me', getMyProfile);
+
+router.post('/auth/user/register',register)
+router.post('/auth/login',login)
+// router.post('/user',user)
+// router.post('/admin',user)
+
+//complete profile
+router.get('/auth/check-profile', checkProfile);
+router.get('/auth/complete-profile', showCompleteProfileForm);
+router.post('/auth/complete-profile', handleCompleteProfileSubmit);
+router.get('/auth/dashboard', showDashboard);
+router.post('/auth/logout', handleLogout);
 
 export default router;
-

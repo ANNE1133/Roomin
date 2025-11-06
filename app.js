@@ -20,12 +20,16 @@ const app = express();
 // app.use(express.json());
 // app.use(cors());
 app.use(morgan('dev'));                          // log request
-app.use(cors({ origin: '*' }));                  // เปิด CORS (ปรับ origin ตามต้องการ)
+// app.use(cors({ origin: '*' }));                  // เปิด CORS (ปรับ origin ตามต้องการ)
 app.use(express.json());                          // แปลง JSON body
 app.use(express.urlencoded({ extended: true })); // รองรับ form submission
 app.use(cookieParser());                          // รองรับ cookies
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET','POST','PUT','DELETE','OPTIONS'],
+  allowedHeaders: ['Content-Type','Authorization'],
+  credentials: true
+}));
 // // 🔹 EJS Template (เผื่อใช้ render หน้าเว็บ)
 // app.set('view engine', 'ejs');
 // app.set('views', path.join(__dirname, 'views'));

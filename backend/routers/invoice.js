@@ -6,7 +6,8 @@ import {
   getInvoiceById,
   createInvoice,
   updateInvoiceStatus,
-  deleteInvoice
+  deleteInvoice,
+  getInvoicesForUser
 } from '../controllers/invoice.js';
 
 const router = express.Router();
@@ -28,5 +29,7 @@ router.patch('/invoices/:id/status', updateInvoiceStatus);
 
 // DELETE /api/invoices/:id - ลบใบแจ้งหนี้
 router.delete('/invoices/:id', deleteInvoice);
+
+router.get("/invoices/user/:authId", getInvoicesForUser);
 
 export default router;

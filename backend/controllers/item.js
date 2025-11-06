@@ -138,16 +138,13 @@ export const createItem = async (req, res) => {
       });
     }
     
-    // ตรวจสอบว่าเป็น ITEM status
-    const status = await prisma.status.findFirst({
-      where: { 
-        StatusID: parseInt(statusId),
-        Type: 'ITEM'
-      }
+    // ตรวจสอบว่า statusId มีอยู่จริง
+    const status = await prisma.status.findUnique({
+      where: { StatusID: parseInt(statusId) }
     });
-    
+
     if (!status) {
-      return res.status(404).json({ error: 'Item status not found' });
+      return res.status(404).json({ error: 'Status not found' });
     }
     
     const item = await prisma.item.create({
