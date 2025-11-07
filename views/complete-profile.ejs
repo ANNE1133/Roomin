@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>กรอกข้อมูลเพิ่มเติม</title>
+</head>
+<body>
+    <h1>เกือบเสร็จแล้ว!</h1>
+    <p>กรุณากรอกข้อมูลเพิ่มเติมให้ครบถ้วน</p>
+
+    <form action="/auth/complete-profile" method="POST">
+        <div>
+            <label for="FName">ชื่อจริง:</label>
+            <input type="text" id="FName" name="FName" required> 
+        </div>
+        <div>
+            <label for="LName">นามสกุล:</label>
+            <input type="text" id="LName" name="LName" required>
+        </div>
+        <div>
+            <label for="Name">ชื่อเล่น:</label>
+            <input type="text" id="Name" name="Name" required>
+        </div>
+        <div>
+            <label for="phone">เบอร์โทรศัพท์:</label>
+            <input type="tel" id="phone" name="phone">
+        </div>
+        <button type="submit">ยืนยันและไปต่อ</button>
+    </form>
+</body>
+</html>

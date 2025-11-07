@@ -1,0 +1,331 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #f3f4f6;
+}
+
+/* App Layout */
+.container {
+    display: flex;
+    height: 100vh;
+    background-color: #f3f4f6;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 192px; /* w-48 = 192px */
+    background-color: #8B7FB8;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.logo-section {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo-section img {
+    width: 80px;  /* ปรับขนาดโลโก้ได้ */
+    height: auto;
+}
+
+.logo-text {
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.navigation {
+    flex: 1;
+    padding: 0 16px;
+}
+
+.nav-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    text-align: left;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.nav-item.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+
+.logout-section {
+    padding: 16px;
+}
+
+.logout {
+    margin-bottom: 0;
+}
+
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: #8B7FB8;
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-title {
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.header-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+}
+
+.header-btn:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.header-icon {
+    width: 20px;
+    height: 20px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+
+.user-name {
+    color: white;
+    font-size: 14px;
+}
+
+.content-area {
+    flex: 1;
+    padding: 24px;
+}
+
+/* Payment Table Styles */
+.payment-table {
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.table-header {
+    background-color: #8B7FB8;
+    color: black;
+}
+
+.table-row {
+    display: grid;
+    /* grid-template-columns: repeat(7, 1fr); */
+    grid-template-columns: 1fr 1.5fr 1.5fr 1.5fr 1.2fr 20px 2fr;
+    gap: 16px;
+    padding: 16px 24px;
+    /* align-items: center; */
+}
+
+.table-cell {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+
+.table-body .table-row {
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease;
+}
+
+.table-body .table-row:hover {
+    background-color: #f9fafb;
+}
+
+.table-body .table-row:last-child {
+    border-bottom: none;
+}
+
+.table-body .table-cell {
+    color: #111827;
+    font-weight: 400;
+}
+
+/* Download Button Styles */
+.download-btn {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0; /* ← ไม่ให้หดตัว ขนาดคงที่ 32x32px */
+}
+
+.download-btn:hover {
+    color: #6b7280;
+    background-color: #f3f4f6;
+}
+
+.download-icon {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+}
+
+/* Badge Styles */
+.badge-container {
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.badge.overdue {
+    background-color: #ef4444;
+    color: white;
+}
+
+.badge.overdue:hover {
+    background-color: #dc2626;
+}
+
+.badge.paid {
+    background-color: #10b981;
+    color: white;
+}
+
+.badge.paid:hover {
+    background-color: #059669;
+}
+
+.badge.payment, .badge.details {
+    background-color: #f97316;
+    color: white;
+}
+
+.badge.payment:hover, .badge.details:hover {
+    background-color: #ea580c;
+}
+
+/* เพิ่ม badge สำหรับสถานะ "รอตรวจสอบ" */
+.badge.pending {
+    background-color: #f59e0b;
+    color: white;
+}
+
+.badge.pending:hover {
+    background-color: #d97706;
+}
+
+/* Responsive Design
+@media (max-width: 768px) {
+    .app-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+    
+    .navigation {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        padding: 16px;
+    }
+    
+    .nav-item {
+        white-space: nowrap;
+        margin-bottom: 0;
+    }
+    
+    .logout-section {
+        display: none;
+    }
+    
+    .table-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .table-cell:before {
+        content: attr(data-label) ": ";
+        font-weight: bold;
+        display: inline-block;
+        width: 120px;
+    }
+} */

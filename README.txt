@@ -20,12 +20,12 @@ npx prisma migrate dev
 //ก่อนเริ่มทำ เชื่อม prisma ด้วยจ้า
 npx prisma generate
 
-------------backend-----------
+------------เพื่อนทำแค่นี้พอ-------------
 npm install
 npx prisma generate
-npm start
-
-----------frontend-----------
-npm install
-npm install axios
 npm run dev
+
+----------- run -------------
+เปิด terminal 2 อัน
+1 Backend Folder \Roomin --> npm start
+2 Front \Roomin\Front --> npm run dev
